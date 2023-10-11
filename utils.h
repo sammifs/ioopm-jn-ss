@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
+#include "common.h"
 
 extern char *strdup(const char *);
 
@@ -19,46 +20,26 @@ typedef union {
 typedef bool(*check_func)(char *);
 typedef answer_t(*convert_func)(char *);
 
-bool is_number(char *str)
-{
-  int length = strlen(str);
-  //printf("Length is: %d\n", length);
+int char_to_int(elem_t A);
 
-  for (int i = 0; i < length; ++i) 
-  {
-    if (!isdigit(str[i])) 
-    {
-      if (!(i == 0 && str[i] == '-' && length > 1)) //first char can be '-', only if string is longer than one char
-      {    
-        return false;
-      }
-    }
-  }  
-  return true;
-}
-bool is_float(char *str)
-{
-    int length = strlen(str);
-    int dotcount = 0;
+bool compare_int(elem_t a, elem_t b);
 
-  for (int i = 0; i < length; ++i) 
-  {
-    if (!isdigit(str[i]))  //om stri inte är en siffra och inte godkänd '-' och inte godkänd punkt
-    {
-      if (!(i == 0 && str[i] == '-' && length > 1)) //first char can be '-' , only if string is longer than one char
-      {    
-        if (i < length - 1 && str[i] == '.' && dotcount == 0) //any char can be '.' except first and last
-        {
-          ++dotcount;
-        }
-        else 
-        {
-          return false;
-        }
-      }
-    }
-  }
-  return dotcount == 1;
-}
+char *read_string(char *buf, int buf_siz);
+answer_t make_float(char *str);
+bool not_empty(char *str);
+
+bool is_shelf(char *str);
+bool is_number(char *str);
+bool is_float(char *str);
+
+answer_t ask_question(char *question, check_func check, convert_func convert);
+int ask_question_int(char *question);
+double ask_question_float(char *question);
+char *ask_question_string(char *question);
+char *ask_question_shelf(char *question);
+
+int string_length(char *inputstring);
+void print(char *inputstring);
+void println(char *inputstring);
 
 #endif
