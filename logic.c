@@ -1,5 +1,6 @@
 #include "logic.h"
 #include "hash_table.h"
+#include "utils.h"
 
 
 void init_hashtable(ioopm_hash_table_t *ht) {
@@ -12,37 +13,39 @@ void init_hashtable(ioopm_hash_table_t *ht) {
 }
 
 
-bool add_merch() {
+bool add_merch(ioopm_hash_table_t *ht) {
+    // TODO: Stub    
+    char *key = ask_question_string("What is our product?  ");
+    ioopm_hash_table_insert(ht, int_elem('A'), int_elem(324));
+    return true;
+}
+
+bool list_merch(ioopm_hash_table_t *ht) {
     // TODO: Stub
     return true;
 }
 
-bool list_merch() {
+bool remove_merch(ioopm_hash_table_t *ht) {
     // TODO: Stub
     return true;
 }
 
-bool remove_merch() {
+bool edit_merch(ioopm_hash_table_t *ht) {
     // TODO: Stub
     return true;
 }
 
-bool edit_merch() {
+bool show_stock(ioopm_hash_table_t *ht) {
     // TODO: Stub
     return true;
 }
 
-bool show_stock() {
+bool replenish_stock(ioopm_hash_table_t *ht) {
     // TODO: Stub
     return true;
 }
 
-bool replenish_stock() {
-    // TODO: Stub
-    return true;
-}
-
-bool quit() {
+bool quit(ioopm_hash_table_t *ht) {
     // TODO:Stub
     return false;
 }

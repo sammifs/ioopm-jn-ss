@@ -3,16 +3,16 @@
 
 void init_hashtable(ioopm_hash_table_t *ht);
 
-bool add_merch();
+bool add_merch(ioopm_hash_table_t *ht);
 
-bool list_merch();
+bool list_merch(ioopm_hash_table_t *ht);
 
-bool remove_merch();
+bool remove_merch(ioopm_hash_table_t *ht);
 
-bool edit_merch();
+bool edit_merch(ioopm_hash_table_t *ht);
 
-bool show_stock();
+bool show_stock(ioopm_hash_table_t *ht);
 
-bool replenish_stock();
+bool replenish_stock(ioopm_hash_table_t *ht);
 
-bool quit();
+bool quit(ioopm_hash_table_t *ht);

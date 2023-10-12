@@ -24,16 +24,18 @@ void print_menu() {
 
 int main() {
     print_menu();
-    ioopm_hash_table_t *ht = ioopm_hash_table_create(char_to_int, compare_int, NULL);
-    init_hashtable(ht);
+    ioopm_hash_table_t *choices = ioopm_hash_table_create(char_to_int, compare_int, NULL);
+    ioopm_hash_table_t *warehouse = ioopm_hash_table_create(char_to_int, compare_int, NULL);
+    init_hashtable(choices);
     bool loop = true;
     while (loop) {
-        elem_t input = int_elem(*ask_question_string("What to do?\n"));
+        elem_t input = int_elem(toupper(*ask_question_string("What to do?\n")));
         bool success;
         bool (*fun_pointer) ();
-        fun_pointer = ioopm_hash_table_lookup(ht, input, &success).ptr_value;
-        loop = fun_pointer();
+        fun_pointer = ioopm_hash_table_lookup(choices, input, &success).ptr_value;
+        loop = fun_pointer(warehouse);
     }
-    ioopm_hash_table_destroy(ht);
+    ioopm_hash_table_destroy(choices);
+    ioopm_hash_table_destroy(warehouse);
     return 0;
 }
