@@ -7,6 +7,8 @@ MEM = valgrind --leak-check=full
 %.o: %.c %.h
 	$(CC) $(FLAGS) $< -c
 
+event_loop:
+	$(CC) $(FLAGS) event_loop.c hash_table.c linked_list.c utils.c logic.c -o $@
 
 
 build_ll_test: linked_list.o  linked_list_tests.c
@@ -103,4 +105,4 @@ clean:
 	rm -f *.gcno
 	rm -f freq_count build_ht_test build_ll_test freq-count gmon.out hash_table
 
-.PHONY: test clean freq_small freq_1k freq_10k freq_16k gprof_small gprof_1k gprof_10k gprof_16k gcov_ht gcov_ll test_ht_mem test_ll_mem
+.PHONY: event_loop test clean freq_small freq_1k freq_10k freq_16k gprof_small gprof_1k gprof_10k gprof_16k gcov_ht gcov_ll test_ht_mem test_ll_mem
