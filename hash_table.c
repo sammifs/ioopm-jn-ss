@@ -176,6 +176,21 @@ void ioopm_hash_table_clear(ioopm_hash_table_t *ht) {
     }
   }
 }
+char **ioopm_hash_table_keys_char(ioopm_hash_table_t *ht) {
+  char **result = calloc(ioopm_hash_table_size(ht), 32 * sizeof(char));
+
+  // Initialize counter, should be equal to ht->size when function returns.
+  int counter = 0;
+  for (int i=0; i<No_Buckets; i++) {
+    // Avoid dummy node with ->next
+    entry_t *cursor = ht->buckets[i]->next;
+    while (cursor != NULL) {
+      result[counter++] = cursor->key.ptr_value;
+      cursor = cursor->next;
+    }
+  }
+  return result;
+}
 
 ioopm_list_t *ioopm_hash_table_keys(ioopm_hash_table_t *ht) {
   // For now the list equality function doesnt matter, although it could be

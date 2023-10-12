@@ -6,6 +6,7 @@
 #include "linked_list.h"
 #include "iterator.h"
 
+
 /**
  * @file hash_table.h
  * @author Johannes Segersten, Samuel Sverker
@@ -64,6 +65,9 @@ bool ioopm_hash_table_is_empty(ioopm_hash_table_t *ht);
 /// @brief clear all the entries in a hash table
 /// @param h hash table operated upon
 void ioopm_hash_table_clear(ioopm_hash_table_t *ht);
+
+// TODO: WRITE BRIEF
+char **ioopm_hash_table_keys_char(ioopm_hash_table_t *ht);
 
 /// @brief return the keys for all entries in a hash map (in no particular order, but same as ioopm_hash_table_values)
 /// @param h hash table operated upon

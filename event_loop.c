@@ -5,7 +5,6 @@
 #include "linked_list.h"
 #include "logic.h"
 
-
 void print_menu() {
     printf("[A]dd merchandise.\n");
     printf("[L]ist merchandise.\n");
@@ -25,7 +24,8 @@ void print_menu() {
 int main() {
     print_menu();
     ioopm_hash_table_t *choices = ioopm_hash_table_create(char_to_int, compare_int, NULL);
-    ioopm_hash_table_t *warehouse = ioopm_hash_table_create(char_to_int, compare_int, NULL);
+    // TODO : Maybe strcmp -> int compare. Change key to int with hash.
+    ioopm_hash_table_t *warehouse = ioopm_hash_table_create(string_to_int, compare_int, NULL);
     init_hashtable(choices);
     bool loop = true;
     while (loop) {
@@ -33,6 +33,7 @@ int main() {
         bool success;
         bool (*fun_pointer) ();
         fun_pointer = ioopm_hash_table_lookup(choices, input, &success).ptr_value;
+        // TODO: Maybe pass &bool to controll programflow.
         loop = fun_pointer(warehouse);
     }
     ioopm_hash_table_destroy(choices);

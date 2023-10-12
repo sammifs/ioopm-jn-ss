@@ -20,6 +20,9 @@ typedef union {
 typedef bool(*check_func)(char *);
 typedef answer_t(*convert_func)(char *);
 
+int cmpstringp(const void *p1, const void *p2);
+
+int string_to_int(elem_t str);
 int char_to_int(elem_t A);
 
 bool compare_int(elem_t a, elem_t b);

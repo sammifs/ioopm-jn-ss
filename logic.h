@@ -5,7 +5,7 @@ void init_hashtable(ioopm_hash_table_t *ht);
 
 bool add_merch(ioopm_hash_table_t *ht);
 
-bool list_merch(ioopm_hash_table_t *ht);
+void list_merch(ioopm_hash_table_t *ht);
 
 bool remove_merch(ioopm_hash_table_t *ht);
 

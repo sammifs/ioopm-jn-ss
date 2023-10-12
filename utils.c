@@ -6,6 +6,26 @@
 #include <ctype.h>
 #include <string.h>
 
+
+int cmpstringp(const void *p1, const void *p2)
+{
+  return strcmp(*(char *const *)p1, *(char *const *)p2);
+}
+
+
+// Uses the DJB2 algorithm to hash the string
+int string_to_int(elem_t str) {
+    int hash = 5381;
+    unsigned char *ptr = (unsigned char *)str.ptr_value;
+
+    while (*ptr) {
+        hash = ((hash << 5) + hash) + *ptr; // hash * 33 + c
+        ptr++;
+    }
+
+    return hash;
+}
+
 int char_to_int(elem_t A) {
   return A.int_value;
 }
