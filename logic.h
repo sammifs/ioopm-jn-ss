@@ -6,16 +6,30 @@ typedef struct shelf shelf_t;
 
 void init_hashtable(ioopm_hash_table_t *ht);
 
-bool add_merch(ioopm_hash_table_t *ht);
+bool add_merch();
+
+bool delete_merch();
+
+bool edit_merch();
+
+bool show_stock();
+
+bool replenish_stock();
 
 void list_merch(ioopm_hash_table_t *ht);
 
-bool remove_merch(ioopm_hash_table_t *ht);
+void create_cart();
 
-bool edit_merch(ioopm_hash_table_t *ht);
+void remove_cart();
 
-bool show_stock(ioopm_hash_table_t *ht);
+void add_to_cart();
 
-bool replenish_stock(ioopm_hash_table_t *ht);
+void remove_from_cart();
 
-bool quit(ioopm_hash_table_t *ht);
+void calculate_cart();
+
+void checkout();
+
+void undo();
+
+void quit();

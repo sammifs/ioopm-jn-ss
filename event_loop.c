@@ -16,6 +16,7 @@ void print_menu() {
     printf("[R]emove cart.\n");
     printf("[+] Add to cart.\n");
     printf("[-] Remove from cart.\n");
+    printf("[=] Calculate cost of cart.");
     printf("Check[O]ut.\n");
     printf("[U]ndo.\n");
     printf("[Q]uit\n");
@@ -23,20 +24,58 @@ void print_menu() {
 
 int main() {
     print_menu();
-    ioopm_hash_table_t *choices = ioopm_hash_table_create(char_to_int, compare_int, NULL);
     // TODO : Maybe strcmp -> int compare. Change key to int with hash.
     ioopm_hash_table_t *warehouse = ioopm_hash_table_create(string_to_int, compare_int, NULL);
-    init_hashtable(choices);
     bool loop = true;
     while (loop) {
-        elem_t input = int_elem(toupper(*ask_question_string("What to do?\n")));
-        bool success;
-        bool (*fun_pointer) ();
-        fun_pointer = ioopm_hash_table_lookup(choices, input, &success).ptr_value;
-        // TODO: Maybe pass &bool to controll programflow.
-        loop = fun_pointer(warehouse);
+        char choice = toupper(*ask_question_string("What to do?\n"));
+
+        if (choice == 'A') {
+            add_merch(warehouse);
+        }
+        else if (choice == 'L') {
+            list_merch(warehouse); 
+        }
+        else if (choice == 'D') {
+            delete_merch(warehouse);
+        }
+        else if (choice == 'E') {
+            edit_merch(warehouse);
+        }
+        else if (choice == 'S') {
+            show_stock(warehouse);
+        }
+        else if (choice == 'P') {
+            replenish_stock(warehouse);
+        }
+        else if (choice == 'C') {
+            create_cart();
+        }
+        else if (choice == 'R') {
+            remove_cart();
+        }
+        else if (choice == '+') {
+            add_to_cart();
+        }
+        else if (choice == '-') {
+            remove_from_cart();
+        }
+        else if (choice == '=') {
+            calculate_cart();
+        }
+        else if (choice == 'O') {
+            checkout();
+        }
+        else if (choice == 'U') {
+            undo();
+        }
+        else if (choice == 'Q') {
+            quit(&loop);
+        }
+        else {
+            printf("Not an option!\n");
+        }
     }
-    ioopm_hash_table_destroy(choices);
     ioopm_hash_table_destroy(warehouse);
     return 0;
 }

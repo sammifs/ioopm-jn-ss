@@ -22,16 +22,6 @@ struct merch
   ioopm_list_t *locs; 
 };
 
-
-void init_hashtable(ioopm_hash_table_t *ht) {
-    ioopm_hash_table_insert(ht, int_elem('A'), ptr_elem(add_merch));
-    ioopm_hash_table_insert(ht, int_elem('L'), ptr_elem(list_merch));
-    ioopm_hash_table_insert(ht, int_elem('R'), ptr_elem(remove_merch));
-    ioopm_hash_table_insert(ht, int_elem('E'), ptr_elem(edit_merch));
-    ioopm_hash_table_insert(ht, int_elem('S'), ptr_elem(show_stock));
-    ioopm_hash_table_insert(ht, int_elem('Q'), ptr_elem(quit));
-}
-
 merch_t *merch_create(char *name) {
     merch_t *result = calloc(1, sizeof(merch_t));
     
@@ -91,7 +81,7 @@ void list_merch(ioopm_hash_table_t *ht) {
     }
 }
 
-bool remove_merch(ioopm_hash_table_t *ht) {
+bool delete_merch(ioopm_hash_table_t *ht) {
     // TODO: Stub
     return true;
 }
@@ -169,7 +159,34 @@ bool replenish_stock(ioopm_hash_table_t *ht) {
     return true;
 }
 
-bool quit(ioopm_hash_table_t *ht) {
-    // TODO:Stub
-    return false;
+void create_cart() {
+    // TODO: Stub
+}
+
+void remove_cart() {
+    // TODO: Stub
+}
+
+void add_to_cart() {
+    // TODO: Stub
+}
+
+void remove_from_cart() {
+    // TODO: Stub
+}
+
+void calculate_cart() {
+    // TODO: Stub
+}
+
+void checkout() {
+    // TODO: Stub
+}
+
+void undo() {
+    // TODO: Stub
+}
+
+void quit(bool *loop) {
+    *loop = false;
 }
