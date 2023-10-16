@@ -8,6 +8,13 @@ union elem
   void *ptr_value;
 };
 
+struct shelf
+{
+  char *shelf;       // holds shelf as for exampel A23
+  int amount;   // holds the amount in "ören"
+};
+
+typedef struct shelf shelf_t;
 typedef union elem elem_t;
 
 #define int_elem(x) (elem_t) { .int_value=(x) }

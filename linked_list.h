@@ -71,6 +71,14 @@ bool ioopm_linked_list_is_empty(ioopm_list_t *list);
 /// @return the value removed in an element struct
 elem_t ioopm_linked_list_remove(ioopm_list_t *list, int index);
 
+
+/// @brief Test if an element is in the list, if so return the element
+/// @param list the linked list
+/// @param element the element sought
+/// @param success changes if we found it or not
+/// @return returns the sought element if we found it, else NULL
+elem_t ioopm_linked_list_contains_return_elem(ioopm_list_t *list, char *shelf, bool *success);
+
 /// @brief Test if an element is in the list
 /// @param list the linked list
 /// @param element the element sought

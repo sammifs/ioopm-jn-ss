@@ -35,6 +35,10 @@ bool compare_int(elem_t a, elem_t b) {
   return a.int_value == b.int_value;
 }
 
+bool compare_ptr(elem_t a, elem_t b) {
+  return a.ptr_value == b.ptr_value;
+}
+
 bool compare_str(elem_t a, elem_t b) {
   char *a_str = a.ptr_value;
   char *b_str = b.ptr_value;
@@ -45,6 +49,10 @@ bool compare_str(elem_t a, elem_t b) {
 bool not_empty(char *str)
 {
   return strlen(str) > 0;
+}
+
+bool not_char(char *str) {
+  return strlen(str) == 1;
 }
 
 char *read_string(char *buf, int buf_siz) 
@@ -130,7 +138,7 @@ bool is_shelf(char *str)
 {
   int length = strlen(str);
 
-  if (length < 2 || !(isupper(str[0]))) //shelf has to have length 2+ and 1st has to be upper 
+  if (length != 3 || !(isupper(str[0]))) //shelf has to have length 3 and 1st has to be upper 
   {
     return false;
   }
@@ -166,6 +174,11 @@ char *ask_question_shelf(char *question)
     return ask_question(question, is_shelf, (convert_func) strdup).string_value;
 };
 
+char ask_question_char(char *question)
+{
+ return *(ask_question(question, not_char, (convert_func) strdup).string_value);
+}
+
 int string_length(char *inputstring) 
 {
     int i = 0;
@@ -200,13 +213,18 @@ void println(char *inputstring)
 
 bool yes_or_no(char *qstn) {
     printf("%s", qstn);
-    char *answer = ask_question_string((""));
-    if (strcmp(answer, "Y")) {
+    // TODO : Maybe toupper?
+    char answer = ask_question_char((""));
+    if (answer == 'Y') {
         return true;
-    } else if (!strcmp(answer, "N")) {
-        printf("You did not give a valid answer! We take that as a no then.\n");
+    } else if (answer == 'y') {
+        return true;
+    } else if (answer == 'N') {
+        return false;
+    } else if (answer == 'n') {
         return false;
     } else {
+        printf("You did not give a valid answer! We take that as a no then.\n");
         return false;
     }
 }

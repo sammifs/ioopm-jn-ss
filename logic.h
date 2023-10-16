@@ -2,7 +2,6 @@
 #include "hash_table.h"
 
 typedef struct merch merch_t;
-typedef struct shelf shelf_t;
 
 void add_merch(ioopm_hash_table_t *ht);
 

@@ -11,6 +11,10 @@ event_loop:
 	$(CC) $(FLAGS) event_loop.c hash_table.c linked_list.c utils.c logic.c -o $@
 
 
+
+build_logic_test: 
+	$(CC) $(FLAGS) $^ -lcunit -o $@
+
 build_ll_test: linked_list.o  linked_list_tests.c
 	$(CC) $(FLAGS) $^ -lcunit -o $@
 
@@ -50,37 +54,6 @@ gcov_ll: linked_list.o
 
 freq_count: hash_table.c freq-count.c
 	$(CC) $(FLAGS) freq-count.c -o freq_count
-
-
-
-freq_small: freq_count small.txt
-	$(MEM) ./freq_count small.txt
-
-gprof_small: freq-count.c
-	$(CC) -pg freq-count.c -o freq_count
-	./freq_count small.txt
-	gprof freq_count gmon.out > prof_output
-
-
-
-freq_1k: freq_count 1k-long-words.txt
-	$(MEM) ./freq_count 1k-long-words.txt
-
-gprof_1k: freq-count.c
-	$(CC) -pg freq-count.c -o freq_count
-	./freq_count 1k-long-words.txt
-	gprof freq_count gmon.out > prof_output
-
-
-
-freq_10k: freq_count 10k-words.txt
-	$(MEM) ./freq_count 10k-words.txt
-
-gprof_10k: freq-count.c
-	$(CC) -pg freq-count.c -o freq_count
-	./freq_count 10k-words.txt
-	gprof freq_count gmon.out > prof_output
-
 
 
 freq_16k: freq_count 16k-words.txt

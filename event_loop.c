@@ -22,13 +22,19 @@ void print_menu() {
     printf("[Q]uit\n");
 }
 
+// TODO: TESTER
+// TODO: Kolla på strdup i ask_question_char, behövs den? Kanske returnera int istället?
+// TODO: Kolla på strdup i shelves listan, greedy linked_list_destroy?
+// TODO: ioopm_hash_table_apply_to_all för att frigöra strdup i warehouse
+
+
 int main() {
     print_menu();
     // TODO : Maybe strcmp -> int compare. Change key to int with hash.
     ioopm_hash_table_t *warehouse = ioopm_hash_table_create(string_to_int, compare_str, NULL);
     bool loop = true;
     while (loop) {
-        char choice = toupper(*ask_question_string("What to do?\n"));
+        char choice = toupper(ask_question_char("What to do?\n"));
 
         if (choice == 'A') {
             add_merch(warehouse);

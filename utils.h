@@ -27,6 +27,7 @@ int string_to_int(elem_t str);
 int char_to_int(elem_t A);
 
 bool compare_int(elem_t a, elem_t b);
+bool compare_ptr(elem_t a, elem_t b);
 bool compare_str(elem_t a, elem_t b);
 
 char *read_string(char *buf, int buf_siz);
@@ -42,6 +43,8 @@ int ask_question_int(char *question);
 double ask_question_float(char *question);
 char *ask_question_string(char *question);
 char *ask_question_shelf(char *question);
+char ask_question_char(char *question);
+
 
 int string_length(char *inputstring);
 void print(char *inputstring);

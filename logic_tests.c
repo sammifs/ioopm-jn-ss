@@ -1,4 +1,6 @@
 #include <CUnit/Basic.h>
+#include "logic.h"
+
 int init_suite(void)
 {
     // Change this function if you want to do something *before* you
@@ -15,8 +17,23 @@ int clean_suite(void)
 // functions of your own.
 void test1(void)
 {
-    CU_ASSERT(42);
+    char *input_file_name = "test_utils_char_input.txt";
+    FILE *f = fopen(input_file_name, "w");
+
+    fputs("A\n", f);
+    fputs("Ost\n", f);
+    fputs("Mat\n", f);
+    fputs("19\n", f);
+
+    fclose(f);
+
+    freopen(input_file_name, "r", stdin);
+
+    freopen("/dev/tty", "r", stdin);
+
+    remove(input_file_name);
 }
+
 void test2(void)
 {
     CU_ASSERT_EQUAL(1 + 1, 2);
@@ -52,7 +69,7 @@ int main()
     }
     // Set the running mode. Use CU_BRM_VERBOSE for maximum output.
     // Use CU_BRM_NORMAL to only print errors and a summary
-    CU_basic_set_mode(CU_BRM_NORMAL);
+    CU_basic_set_mode(CU_BRM_VERBOSE);
     // This is where the tests are actually run!
     CU_basic_run_tests();
     // Tear down CUnit before exiting

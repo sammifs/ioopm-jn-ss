@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include "string.h"
+#include "logic.h"
 
 
 struct link
@@ -133,6 +134,23 @@ bool ioopm_linked_list_contains(ioopm_list_t *list, elem_t element) {
         }
     }
     return false;
+}
+
+
+// TODO : Write interface for shelf_t, with seperate functions.
+elem_t ioopm_linked_list_contains_return_elem(ioopm_list_t *list, char *shelf, bool *success) {
+    ioopm_link_t *linked_list = list->first;
+    for (int i = 0; i < list->size; i++) {
+        shelf_t *list_element = linked_list->element.ptr_value;
+        if (list->equal_fun(ptr_elem(list_element->shelf), ptr_elem(shelf))) {
+            *success = true;
+            return linked_list->element;
+        } else {
+            linked_list = linked_list->next;
+        }
+    }
+    *success = false;
+    return ptr_elem(NULL);
 }
 
 elem_t ioopm_linked_list_remove(ioopm_list_t *list, int index) {
@@ -287,6 +305,7 @@ elem_t ioopm_iterator_current(ioopm_list_iterator_t *iter)
 
 void ioopm_iterator_destroy(ioopm_list_iterator_t *iter)
 {
+  ioopm_linked_list_remove(iter->list, 0);
   free(iter);
 }
 
