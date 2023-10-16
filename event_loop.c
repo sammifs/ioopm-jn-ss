@@ -25,7 +25,7 @@ void print_menu() {
 int main() {
     print_menu();
     // TODO : Maybe strcmp -> int compare. Change key to int with hash.
-    ioopm_hash_table_t *warehouse = ioopm_hash_table_create(string_to_int, compare_int, NULL);
+    ioopm_hash_table_t *warehouse = ioopm_hash_table_create(string_to_int, compare_str, NULL);
     bool loop = true;
     while (loop) {
         char choice = toupper(*ask_question_string("What to do?\n"));

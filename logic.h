@@ -1,4 +1,4 @@
-#include <stdvoid.h>
+#include <stdlib.h>
 #include "hash_table.h"
 
 typedef struct merch merch_t;

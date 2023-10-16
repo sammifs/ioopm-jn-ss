@@ -35,6 +35,12 @@ bool compare_int(elem_t a, elem_t b) {
   return a.int_value == b.int_value;
 }
 
+bool compare_str(elem_t a, elem_t b) {
+  char *a_str = a.ptr_value;
+  char *b_str = b.ptr_value;
+  return strcmp(a_str, b_str) == 0;
+}
+
 /// Hjälpfunktion till ask_question_string
 bool not_empty(char *str)
 {

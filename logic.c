@@ -55,13 +55,13 @@ void list_merch(ioopm_hash_table_t *ht) {
     size_t size = ioopm_hash_table_size(ht);
     int cmpr = 20;
     int i = 0;
-    char *loop = "";
+    char *loop = "Boi";
 
     if (size != 0) {
         char **merch_names = ioopm_hash_table_keys_char(ht);
         qsort(merch_names, size, sizeof(char *), cmpstringp);
         //TODO: antingen strcmp på både "n" och "N" eller toupper för VARJE question for loop
-        while (strcmp("N", loop) || strcmp("n", loop)) {
+        while (!(strcmp("N", loop) == 0 || strcmp("n", loop) == 0)) {
             // We either print the upcoming 20 products or the remaning if there are less
             if (cmpr > size) {
                 cmpr = size;   
@@ -77,6 +77,8 @@ void list_merch(ioopm_hash_table_t *ht) {
             }
             cmpr = cmpr + 20;
         }
+    } else {
+        printf("We don't have any items in our warehouse!\n");
     }
 }
 
@@ -133,13 +135,17 @@ void show_stock(ioopm_hash_table_t *ht) {
 
     if (success) {
         ioopm_list_t *list = merch->locs;
-        ioopm_list_iterator_t *itr = ioopm_list_iterator(list);
         size_t size = ioopm_linked_list_size(list);
+        ioopm_list_iterator_t *itr = ioopm_list_iterator(list);
 
-        for (int i = 0; i < size; i++) {
-            shelf = ioopm_iterator_next(itr).ptr_value;
-            printf("%s: ", shelf->shelf);
-            printf("%d\n", shelf->amount);
+        if (size != 0) {
+            for (int i = 0; i < size; i++) {
+                shelf = ioopm_iterator_next(itr).ptr_value;
+                printf("%s: ", shelf->shelf);
+                printf("%d\n", shelf->amount);
+            }
+        } else {
+            printf("This product don't have any shelfes\n");
         }
 
 
