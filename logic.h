@@ -1,22 +1,20 @@
-#include <stdbool.h>
+#include <stdvoid.h>
 #include "hash_table.h"
 
 typedef struct merch merch_t;
 typedef struct shelf shelf_t;
 
-void init_hashtable(ioopm_hash_table_t *ht);
-
-bool add_merch();
-
-bool delete_merch();
-
-bool edit_merch();
-
-bool show_stock();
-
-bool replenish_stock();
+void add_merch(ioopm_hash_table_t *ht);
 
 void list_merch(ioopm_hash_table_t *ht);
+
+void delete_merch(ioopm_hash_table_t *ht);
+
+void edit_merch(ioopm_hash_table_t *ht);
+
+void show_stock(ioopm_hash_table_t *ht);
+
+void replenish_stock(ioopm_hash_table_t *ht);
 
 void create_cart();
 
@@ -32,4 +30,4 @@ void checkout();
 
 void undo();
 
-void quit();
+void quit(bool *loop);

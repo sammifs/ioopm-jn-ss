@@ -35,7 +35,7 @@ merch_t *merch_create(char *name) {
     return result;
 }
 
-bool add_merch(ioopm_hash_table_t *ht) {
+void add_merch(ioopm_hash_table_t *ht) {
     elem_t name = ptr_elem(ask_question_string("What is the name?    "));
     
     bool success = false;
@@ -43,11 +43,10 @@ bool add_merch(ioopm_hash_table_t *ht) {
     if (!success) {
         merch_t *new = merch_create(name.ptr_value);
         ioopm_hash_table_insert(ht, name, ptr_elem(new));
-        return true;
     }
     // If true we are not allowed to continue.
     else {
-        return false;
+        printf("Item already exists!\n");
     }
 }
 
@@ -81,12 +80,11 @@ void list_merch(ioopm_hash_table_t *ht) {
     }
 }
 
-bool delete_merch(ioopm_hash_table_t *ht) {
+void delete_merch(ioopm_hash_table_t *ht) {
     // TODO: Stub
-    return true;
 }
 
-bool edit_merch(ioopm_hash_table_t *ht) {
+void edit_merch(ioopm_hash_table_t *ht) {
     char *changed_str;
     int changed_int;
     bool success = false;
@@ -119,15 +117,13 @@ bool edit_merch(ioopm_hash_table_t *ht) {
             changed_int = ask_question_int("Write your new price:\n");
             merch->price = changed_int;
         }
-        return true;
 
     } else {
         printf("That item does not exist in our warehouse.\n");
-        return false;
     }
 }
 
-bool show_stock(ioopm_hash_table_t *ht) {
+void show_stock(ioopm_hash_table_t *ht) {
     bool success;
     shelf_t *shelf;
 
@@ -146,17 +142,14 @@ bool show_stock(ioopm_hash_table_t *ht) {
             printf("%d\n", shelf->amount);
         }
 
-        return true;
 
     } else {
         printf("That item does not exist in our warehouse.\n");
-        return false;
     }
 }
 
-bool replenish_stock(ioopm_hash_table_t *ht) {
+void replenish_stock(ioopm_hash_table_t *ht) {
     // TODO: Stub
-    return true;
 }
 
 void create_cart() {
