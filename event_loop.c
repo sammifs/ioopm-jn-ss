@@ -4,6 +4,7 @@
 #include "hash_table.h"
 #include "linked_list.h"
 #include "logic.h"
+#include "interface.h"
 
 void print_menu() {
     printf("[A]dd merchandise.\n");
@@ -37,46 +38,46 @@ int main() {
         char choice = toupper(ask_question_char("What to do?\n"));
 
         if (choice == 'A') {
-            add_merch(warehouse);
+            ioopm_add_merch(warehouse);
         }
         else if (choice == 'L') {
-            list_merch(warehouse); 
+            ioopm_list_merch(warehouse); 
         }
         else if (choice == 'D') {
-            delete_merch(warehouse);
+            ioopm_delete_merch(warehouse);
         }
         else if (choice == 'E') {
-            edit_merch(warehouse);
+            ioopm_edit_merch(warehouse);
         }
         else if (choice == 'S') {
-            show_stock(warehouse);
+            ioopm_show_stock(warehouse);
         }
         else if (choice == 'P') {
-            replenish_stock(warehouse);
+            ioopm_replenish_stock(warehouse);
         }
         else if (choice == 'C') {
-            create_cart();
+            ioopm_create_cart();
         }
         else if (choice == 'R') {
-            remove_cart();
+            ioopm_remove_cart();
         }
         else if (choice == '+') {
-            add_to_cart();
+            ioopm_add_to_cart();
         }
         else if (choice == '-') {
-            remove_from_cart();
+            ioopm_remove_from_cart();
         }
         else if (choice == '=') {
-            calculate_cart();
+            ioopm_calculate_cart();
         }
         else if (choice == 'O') {
-            checkout();
+            ioopm_checkout();
         }
         else if (choice == 'U') {
-            undo();
+            ioopm_undo();
         }
         else if (choice == 'Q') {
-            quit(&loop);
+            ioopm_quit(&loop);
         }
         else {
             printf("Not an option!\n");

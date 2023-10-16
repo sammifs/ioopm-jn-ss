@@ -8,7 +8,7 @@ MEM = valgrind --leak-check=full
 	$(CC) $(FLAGS) $< -c
 
 event_loop:
-	$(CC) $(FLAGS) event_loop.c hash_table.c linked_list.c utils.c logic.c -o $@
+	$(CC) $(FLAGS) event_loop.c hash_table.c linked_list.c utils.c interface.c logic.c -o $@
 
 
 
