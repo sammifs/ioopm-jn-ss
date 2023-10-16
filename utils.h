@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "common.h"
+#include "logic.h"
 
 extern char *strdup(const char *);
 
@@ -44,5 +45,7 @@ char *ask_question_shelf(char *question);
 int string_length(char *inputstring);
 void print(char *inputstring);
 void println(char *inputstring);
+
+bool yes_or_no(char *qstn);
 
 #endif

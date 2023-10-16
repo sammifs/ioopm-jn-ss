@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
+#include "logic.h"
 
 
 int cmpstringp(const void *p1, const void *p2)
@@ -189,4 +190,17 @@ void println(char *inputstring)
     printf("\n");
     print(inputstring);
     printf("\n");
+}
+
+bool yes_or_no(char *qstn) {
+    printf("%s", qstn);
+    char *answer = ask_question_string((""));
+    if (strcmp(answer, "Y")) {
+        return true;
+    } else if (!strcmp(answer, "N")) {
+        printf("You did not give a valid answer! We take that as a no then.\n");
+        return false;
+    } else {
+        return false;
+    }
 }
