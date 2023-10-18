@@ -12,7 +12,7 @@ event_loop:
 
 
 
-build_logic_test: 
+build_logic_test: logic_tests.c logic.o linked_list.o hash_table.o utils.o
 	$(CC) $(FLAGS) $^ -lcunit -o $@
 
 build_ll_test: linked_list.o  linked_list_tests.c
@@ -39,7 +39,11 @@ test_ht_mem: build_ht_test
 memtest:
 	make test_ll_mem 
 	make test_ht_mem
-	
+
+gcov_logic: logic.o hash_table.o linked_list.o utils.o 
+	$(CC) $(GCOVFLAGS) $(FLAGS) -o logic logic.c logic_tests.c -lcunit
+	./logic
+	gcov logic.c
 
 gcov_ht: hash_table.o 
 	$(CC) $(GCOVFLAGS) $(FLAGS) -o hash_table hash_table.c hash_table_tests.c -lcunit
@@ -76,6 +80,6 @@ clean:
 	rm -f *.gcov
 	rm -f *.gcda
 	rm -f *.gcno
-	rm -f freq_count build_ht_test build_ll_test freq-count gmon.out hash_table event_loop
+	rm -f freq_count build_ht_test build_ll_test freq-count gmon.out hash_table event_loop build_logic_test
 
-.PHONY: event_loop test clean freq_small freq_1k freq_10k freq_16k gprof_small gprof_1k gprof_10k gprof_16k gcov_ht gcov_ll test_ht_mem test_ll_mem
+.PHONY: build_logic_test event_loop test clean gprof_16k gcov_ht gcov_ll test_ht_mem test_ll_mem

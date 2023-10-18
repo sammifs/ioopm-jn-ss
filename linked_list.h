@@ -18,8 +18,6 @@
  * @see $CANVAS_OBJECT_REFERENCE$/assignments/gb54499f3b7b264e3af3b68c756090f52
  */
 
-
-typedef struct list ioopm_list_t; /// Meta: struct definition goes in C file
 typedef struct link ioopm_link_t;
 typedef bool(*ioopm_int_predicate)(elem_t value, void *extra);
 typedef void(*ioopm_apply_int_function)(elem_t *value, void *extra);

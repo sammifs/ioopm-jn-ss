@@ -40,8 +40,8 @@ bool compare_ptr(elem_t a, elem_t b) {
 }
 
 bool compare_str(elem_t a, elem_t b) {
-  char *a_str = a.ptr_value;
-  char *b_str = b.ptr_value;
+  char *a_str = a.str_value;
+  char *b_str = b.str_value;
   return strcmp(a_str, b_str) == 0;
 }
 

@@ -81,9 +81,9 @@ static entry_t *find_previous_entry_for_key(entry_t *head_entry, elem_t key, ioo
 void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value) {
   /// Calculate the bucket for this entry
 
-  int bucket = ht->hash_function(key) % No_Buckets; 
-  if (bucket < 0 || bucket > No_Buckets ) { 
-    printf("\nInvalid key! - in ioopm_hash_table_insert\n");
+  int bucket = abs(ht->hash_function(key) % No_Buckets);
+  if (bucket < 0 || bucket >= No_Buckets ) { 
+    printf("\nInvalid key! %d - in ioopm_hash_table_insert\n", bucket);
     return;
   }
 
@@ -91,7 +91,7 @@ void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value) {
   entry_t *entry = find_previous_entry_for_key(ht->buckets[bucket], key, ht->key_eq_function);
   entry_t *next = entry->next; // If find_previous_entry_for_key fails to find anything,
   // next will be NULL.
-
+                  
   /// Check if the next entry should be updated or not
   if (next != NULL) {
     // We dont increase ht->size since we are overwriting.
@@ -104,9 +104,9 @@ void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value) {
 }
 
 elem_t ioopm_hash_table_lookup(ioopm_hash_table_t *ht, elem_t key, bool *success) {
-  int bucket = ht->hash_function(key) % No_Buckets;
-  if (bucket < 0 || bucket > No_Buckets ) { 
-    printf("\nInvalid key! - in ioopm_hash_table_lookup\n");
+  int bucket = abs(ht->hash_function(key) % No_Buckets);
+  if (bucket < 0 || bucket >= No_Buckets ) {
+    printf("\nInvalid key! %d - in ioopm_hash_table_lookup\n", bucket);
     *success = false;
     return ptr_elem(NULL);
   }
@@ -127,8 +127,8 @@ elem_t ioopm_hash_table_lookup(ioopm_hash_table_t *ht, elem_t key, bool *success
 }
 
 elem_t ioopm_hash_table_remove(ioopm_hash_table_t *ht, elem_t key, bool *success) {
-  int bucket = ht->hash_function(key) % No_Buckets; 
-  if (bucket < 0 || bucket > No_Buckets ) { 
+  int bucket = abs(ht->hash_function(key) % No_Buckets); 
+  if (bucket < 0 || bucket >= No_Buckets ) { 
     printf("\nInvalid key! - in ioopm_hash_table_remove\n");
     *success = false;
     return ptr_elem(NULL);
