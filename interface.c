@@ -46,20 +46,11 @@ void ioopm_list_merch(ioopm_hash_table_t *ht) {
 void ioopm_delete_merch(ioopm_hash_table_t *ht) {
     elem_t item = str_elem(ask_question_string("What item do you want to delete?:  "));
 
-    bool lookup_success;
-    elem_t found_value = ioopm_hash_table_lookup(ht, item, &lookup_success);
-
-    if (lookup_success) {
-        bool delete_success;
-        ioopm_hash_table_remove(ht, item, &delete_success);
-        delete_merch(found_value.merch_ptr);
-        if (delete_success) {
-            printf("Item was successfully deleted.\n");
-        }
-        else {
-            printf("Item could not be deleted!\n");
-        }
-    } else {
+    bool delete_success = delete_merch(ht, item);
+    if (delete_success) {
+        printf("Item was successfully deleted.\n");
+    }
+    else {
         printf("This item does not exist in our warehouse!\n");
     }
 }
@@ -75,7 +66,7 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht) {
     elem_t item = str_elem(ask_question_string("What item do you want to change?: "));
     // This runs twice since we run lookup inside change_change name and the others aswell, we can delete
     // from the but add return value from lookup as a pointer as a argument.
-    elem_t ptr = ioopm_hash_table_lookup(ht, item, &lookup_success);
+    ioopm_hash_table_lookup(ht, item, &lookup_success);
 
     if (lookup_success) {
         question = "Do you want to change the name? Y/N: ";

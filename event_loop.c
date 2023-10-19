@@ -83,6 +83,7 @@ int main() {
             printf("Not an option!\n");
         }
     }
+    delete_all_items(warehouse);
     ioopm_hash_table_destroy(warehouse);
     return 0;
 }

@@ -120,6 +120,7 @@ elem_t ioopm_linked_list_get(ioopm_list_t *list, int index)
     }
     return list_itr->element;
 } 
+
 bool ioopm_linked_list_is_empty(ioopm_list_t *list) {
     return list->size == 0;
 }

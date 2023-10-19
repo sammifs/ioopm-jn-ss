@@ -1,0 +1,1 @@
+skapa och sen ta bort en iterator på en tom lista skapar segfault

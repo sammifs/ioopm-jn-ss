@@ -6,6 +6,40 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
+char *get_desc(ioopm_hash_table_t *ht, elem_t item, bool *success)
+{
+    elem_t sought_merch = ioopm_hash_table_lookup(ht, item, success);
+
+    if (*success) {
+        return sought_merch.merch_ptr->desc;
+    } else {
+        return NULL;
+    }
+}
+
+int get_price(ioopm_hash_table_t *ht, elem_t item, bool *success)
+{
+    elem_t sought_merch = ioopm_hash_table_lookup(ht, item, success);
+
+    if (*success) {
+        return sought_merch.merch_ptr->price;
+    } else {
+        return 0;
+    }
+}
+
+void delete_all_items(ioopm_hash_table_t *ht)
+{
+    char **merch_names = ioopm_hash_table_keys_char(ht);
+    size_t size = ioopm_hash_table_size(ht);
+
+    for (int i = 0; i < size; i++) {
+        delete_merch(ht, str_elem(merch_names[i]));
+    }
+    free(merch_names);
+}
+
 // TODO: print whats wrong before returning false in all functions
 
 bool name_exists(ioopm_hash_table_t *ht, elem_t name) {
@@ -22,7 +56,7 @@ shelf_t *create_shelf(char *shelf, char* merch_name, int amount) {
     return result;
 }
 
-merch_t *merch_create(ioopm_hash_table_t *ht, elem_t name, char *desc, int price) {
+elem_t merch_create(ioopm_hash_table_t *ht, elem_t name, char *desc, int price) {
     merch_t *result = calloc(1, sizeof(merch_t));
     
     // TODO: Look at eq function, maybe should say NULL, maybe something else.
@@ -32,7 +66,7 @@ merch_t *merch_create(ioopm_hash_table_t *ht, elem_t name, char *desc, int price
 
     ioopm_hash_table_insert(ht, name, merch_elem(result));
 
-    return result;
+    return name;
 }
 
 void merch_destroy(merch_t *merch) {
@@ -54,8 +88,10 @@ bool list_merch(ioopm_hash_table_t *ht, int cmpr, size_t size, int *index) {
             }
             // If there are product that we have not printed yet, get the option to keep going or not
             if (cmpr != size) {
+                free(merch_names);
                 return true;
             } else {
+                free(merch_names);
                 return false;
             }
     } else {
@@ -65,16 +101,27 @@ bool list_merch(ioopm_hash_table_t *ht, int cmpr, size_t size, int *index) {
 }
 
 // TODO: Maybe change to bool function for better error handling?
-void delete_merch(merch_t *merch) {
-    ioopm_list_iterator_t *iter = ioopm_list_iterator(merch->locs);
+bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
+    bool item_exists;
+    elem_t found_merch = ioopm_hash_table_lookup(ht, item, &item_exists);
 
-    while (ioopm_iterator_has_next(iter)) {
-        assert(ioopm_iterator_next(iter).shelf_ptr);
-        free(ioopm_iterator_current(iter).shelf_ptr);
+    if (item_exists) {
+        bool remove_success;
+        ioopm_hash_table_remove(ht, item, &remove_success);
+
+        ioopm_list_iterator_t *iter = ioopm_list_iterator(found_merch.merch_ptr->locs);
+
+        while (ioopm_iterator_has_next(iter)) {
+            assert(ioopm_iterator_next(iter).shelf_ptr);
+            free(ioopm_iterator_current(iter).shelf_ptr);
+        }
+        ioopm_iterator_destroy(iter);
+        merch_destroy(found_merch.merch_ptr);
+        // TODO: Remove shelves from other list/array
+        return true;
+    } else {
+        return false;
     }
-    ioopm_iterator_destroy(iter);
-    merch_destroy(merch);
-    // TODO: Remove shelves from other list/array
 }
 
 bool change_name(ioopm_hash_table_t *ht, char *name, elem_t *item) {
@@ -109,8 +156,7 @@ void change_price(ioopm_hash_table_t *ht, int price, elem_t *item) {
     merch->price = price;
 }
 
-
-void show_stock(ioopm_hash_table_t *ht, elem_t item) {
+bool show_stock(ioopm_hash_table_t *ht, elem_t item) {
     bool success;
     shelf_t *shelf;
 
@@ -120,26 +166,31 @@ void show_stock(ioopm_hash_table_t *ht, elem_t item) {
     if (success) {
         ioopm_list_t *list = merch->locs;
         size_t size = ioopm_linked_list_size(list);
-        ioopm_list_iterator_t *itr = ioopm_list_iterator(list);
 
         if (size != 0) {
+            ioopm_list_iterator_t *itr = ioopm_list_iterator(list);
+
             for (int i = 0; i < size; i++) {
                 shelf = ioopm_iterator_next(itr).shelf_ptr;
                 printf("%s: ", shelf->shelf);
                 printf("%d\n", shelf->amount);
             }
             ioopm_iterator_destroy(itr);
+            return true;
         } else {
-            ioopm_iterator_destroy(itr);
             printf("This product don't have any shelfes\n");
+            return false;
+
         }
 
     } else {
         printf("That item does not exist in our warehouse.\n");
+        return false;
     }
 }
 
-void replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amount) {
+bool replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amount) {
+    //TODO: Free strdups om de inte används!
     bool success;
     
     elem_t ptr = ioopm_hash_table_lookup(ht, *item, &success);
@@ -152,12 +203,15 @@ void replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amou
         if (linked_list_success) {
             shelf_t *found_shelf = found->shelf_ptr;
             found_shelf->amount += amount;
+            return true;
         } else {
             //TODO: Vi lägger nu till en shelf direkt om den inte finns, får inget val.
             ioopm_linked_list_append(merch->locs, shelf_elem(create_shelf(shelf, item->str_value, amount)));
+            return true;
         }
     } else {
         printf("We couldn't replenish since the given item does not exist in our warehouse.\n");
+        return false;
     }
 }
 

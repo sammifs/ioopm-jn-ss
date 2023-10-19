@@ -40,8 +40,8 @@ memtest:
 	make test_ll_mem 
 	make test_ht_mem
 
-gcov_logic: logic.o hash_table.o linked_list.o utils.o 
-	$(CC) $(GCOVFLAGS) $(FLAGS) -o logic logic.c logic_tests.c -lcunit
+gcov_logic: logic.o hash_table.o linked_list.o utils.o logic_tests.c
+	$(CC) $(GCOVFLAGS) $(FLAGS) hash_table.c linked_list.c logic.c logic_tests.c utils.c -o logic -lcunit
 	./logic
 	gcov logic.c
 
@@ -80,6 +80,6 @@ clean:
 	rm -f *.gcov
 	rm -f *.gcda
 	rm -f *.gcno
-	rm -f freq_count build_ht_test build_ll_test freq-count gmon.out hash_table event_loop build_logic_test
+	rm -f freq_count build_ht_test build_ll_test freq-count gmon.out hash_table event_loop build_logic_test logic 
 
 .PHONY: build_logic_test event_loop test clean gprof_16k gcov_ht gcov_ll test_ht_mem test_ll_mem
