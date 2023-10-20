@@ -33,6 +33,7 @@ int main() {
     print_menu();
     // TODO : Maybe strcmp -> int compare. Change key to int with hash.
     ioopm_hash_table_t *warehouse = ioopm_hash_table_create(string_to_int, compare_str, NULL);
+    ioopm_hash_table_t *shelf_ht = ioopm_hash_table_create(string_to_int, compare_str, NULL);
     bool loop = true;
     while (loop) {
         char *choice_ptr = ask_question_char("What to do?");
@@ -54,7 +55,7 @@ int main() {
             ioopm_show_stock(warehouse);
         }
         else if (choice == 'P') {
-            ioopm_replenish_stock(warehouse);
+            ioopm_replenish_stock(warehouse, shelf_ht);
         }
         else if (choice == 'C') {
             ioopm_create_cart();
@@ -87,6 +88,7 @@ int main() {
         free(choice_ptr);
     }
     delete_all_items(warehouse);
+    ioopm_hash_table_destroy(shelf_ht);
     ioopm_hash_table_destroy(warehouse);
     return 0;
 }

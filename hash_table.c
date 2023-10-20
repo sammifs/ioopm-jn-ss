@@ -250,10 +250,10 @@ bool ioopm_hash_table_all(ioopm_hash_table_t *ht, ioopm_predicate pred, void *ar
   for (int i = 0; i < size && result; ++i) {
       result = result && pred(ioopm_iterator_next(key_iter), ioopm_iterator_next(value_iter), arg);
   }
-  ioopm_linked_list_destroy(keys);
-  ioopm_linked_list_destroy(values);
   ioopm_iterator_destroy(key_iter);
   ioopm_iterator_destroy(value_iter);
+  ioopm_linked_list_destroy(keys);
+  ioopm_linked_list_destroy(values);
   return result;
 }
 

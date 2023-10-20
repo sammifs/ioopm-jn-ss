@@ -250,31 +250,34 @@ void test_change_price() {
 void test_replenish_stock(void)
 {
     ioopm_hash_table_t *ht = ioopm_hash_table_create(string_to_int, compare_str, NULL);
+    ioopm_hash_table_t *shelf_ht = ioopm_hash_table_create(string_to_int, compare_str, NULL);
 
     merch_create(ht, str_elem("Ost"), "Mat", 19);
     merch_create(ht, str_elem("Korv"), "Mat", 44);
     merch_create(ht, str_elem("Potatis"), "Mat", 500);
 
     // Replenish on a non-existing item
-    CU_ASSERT_FALSE(replenish_stock(ht, &str_elem("Popcorn"), "A34", 50));
+    CU_ASSERT_FALSE(replenish_stock(ht, &str_elem("Popcorn"), "A34", 50, shelf_ht));
 
     // Create a shelf and change one stock
-    CU_ASSERT_TRUE(replenish_stock(ht, &str_elem("Ost"), "A34", 50));
-    CU_ASSERT_TRUE(replenish_stock(ht, &str_elem("Ost"), "A34", 100));
+    CU_ASSERT_TRUE(replenish_stock(ht, &str_elem("Ost"), "A34", 50, shelf_ht));
+    CU_ASSERT_TRUE(replenish_stock(ht, &str_elem("Ost"), "A34", 100, shelf_ht));
 
     // Create a second shelf
-    CU_ASSERT_TRUE(replenish_stock(ht, &str_elem("Ost"), "A45", 75));
+    CU_ASSERT_TRUE(replenish_stock(ht, &str_elem("Ost"), "A45", 75, shelf_ht));
     
     // Create a shelf on a second item
-    CU_ASSERT_TRUE(replenish_stock(ht, &str_elem("Ost"), "A45", 75));
+    CU_ASSERT_TRUE(replenish_stock(ht, &str_elem("Ost"), "A45", 75, shelf_ht));
 
     delete_all_items(ht);
     ioopm_hash_table_destroy(ht);
+    ioopm_hash_table_destroy(shelf_ht);
 }
 
 void test_show_stock(void)
 {
     ioopm_hash_table_t *ht = ioopm_hash_table_create(string_to_int, compare_str, NULL);
+    ioopm_hash_table_t *shelf_ht = ioopm_hash_table_create(string_to_int, compare_str, NULL);
 
     merch_create(ht, str_elem("Ost"), "Mat", 19);
     merch_create(ht, str_elem("Korv"), "Mat", 44);
@@ -286,11 +289,28 @@ void test_show_stock(void)
     // Show stock of an item with no shelfes
     CU_ASSERT_FALSE(show_stock(ht, str_elem("Ost")));
 
-    replenish_stock(ht, &str_elem("Ost"), "A34", 50);
+    replenish_stock(ht, &str_elem("Ost"), "A34", 50, shelf_ht);
     CU_ASSERT_TRUE(show_stock(ht, str_elem("Ost")));
 
     delete_all_items(ht);
     ioopm_hash_table_destroy(ht);
+    ioopm_hash_table_destroy(shelf_ht);
+}
+
+void test_mixed_merch_replenish() {
+    ioopm_hash_table_t *ht = ioopm_hash_table_create(string_to_int, compare_str, NULL);
+    ioopm_hash_table_t *shelf_ht = ioopm_hash_table_create(string_to_int, compare_str, NULL);
+
+
+    merch_create(ht, str_elem("Ost"), "Mat", 19);
+    merch_create(ht, str_elem("Korv"), "Mat", 44);
+
+    replenish_stock(ht, &str_elem("Ost"), "A34", 50, shelf_ht);
+    CU_ASSERT_FALSE(replenish_stock(ht, &str_elem("Korv"), "A34", 50, shelf_ht));
+
+    delete_all_items(ht);
+    ioopm_hash_table_destroy(ht);
+    ioopm_hash_table_destroy(shelf_ht);
 }
 
 int main()
@@ -326,6 +346,7 @@ int main()
         (CU_add_test(my_test_suite, "Tests for change_price function", test_change_price) == NULL) ||
         (CU_add_test(my_test_suite, "Tests for test_replenish_stock function", test_replenish_stock) == NULL) ||
         (CU_add_test(my_test_suite, "Tests for test_show_stock function", test_show_stock) == NULL) ||
+        (CU_add_test(my_test_suite, "Tests for replenish_stock on shelf that is occupied by other merch", test_mixed_merch_replenish) == NULL) ||
         0)
     {
         // If adding any of the tests fails, we tear down CUnit and exit

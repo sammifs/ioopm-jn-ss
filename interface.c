@@ -118,12 +118,12 @@ void ioopm_show_stock(ioopm_hash_table_t *ht) {
     free(item.str_value);
 }
 
-void ioopm_replenish_stock(ioopm_hash_table_t *ht) {
+void ioopm_replenish_stock(ioopm_hash_table_t *ht, ioopm_hash_table_t *shelf_ht) {
     elem_t item = str_elem(ask_question_string("What item do you want to replenish?: "));
     char *shelf = ask_question_shelf("What shelf do you want to replenish?: ");
     int amount = ask_question_int("What amount do you want to increase the stock with?: ");
 
-    if (!replenish_stock(ht, &item, shelf, amount)) {
+    if (!replenish_stock(ht, &item, shelf, amount, shelf_ht)) {
         free(item.str_value);
         free(shelf);
     }   

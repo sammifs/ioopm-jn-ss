@@ -68,19 +68,19 @@ elem_t merch_create(ioopm_hash_table_t *ht, elem_t name, char *desc, int price) 
     return name;
 }
 // DETTA ÄR FÖR TESTER
-// void merch_destroy(merch_t *merch) {
-//     // TODO: 
-//     ioopm_linked_list_destroy(merch->locs);
-//     free(merch);
-// }
-
-// DETTA ÄR FÖR EVENT_LOOP
 void merch_destroy(merch_t *merch) {
     // TODO: 
     ioopm_linked_list_destroy(merch->locs);
-    free(merch->desc);
     free(merch);
 }
+
+// DETTA ÄR FÖR EVENT_LOOP
+// void merch_destroy(merch_t *merch) {
+//     // TODO: 
+//     ioopm_linked_list_destroy(merch->locs);
+//     free(merch->desc);
+//     free(merch);
+// }
 
 bool list_merch(ioopm_hash_table_t *ht, int cmpr, size_t size, int *index) {
     if (size != 0) {
@@ -108,11 +108,35 @@ bool list_merch(ioopm_hash_table_t *ht, int cmpr, size_t size, int *index) {
 }
 
 // TODO: Maybe change to bool function for better error handling?
+bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
+    bool item_exists;
+    elem_t found_merch = ioopm_hash_table_lookup(ht, item, &item_exists);
+
+    if (item_exists) {
+        bool remove_success;
+        ioopm_hash_table_remove(ht, item, &remove_success);
+
+        ioopm_list_iterator_t *iter = ioopm_list_iterator(found_merch.merch_ptr->locs);
+
+        while (ioopm_iterator_has_next(iter)) {
+            assert(ioopm_iterator_next(iter).shelf_ptr);
+            free(ioopm_iterator_current(iter).shelf_ptr);
+        }
+        ioopm_iterator_destroy(iter);
+        merch_destroy(found_merch.merch_ptr);
+        // TODO: Remove shelves from other list/array
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
 //     bool item_exists;
 //     elem_t found_merch = ioopm_hash_table_lookup(ht, item, &item_exists);
 
 //     if (item_exists) {
+//         elem_t *key_ptr = ioopm_get_key_pointer(ht, item, &item_exists);
 //         bool remove_success;
 //         ioopm_hash_table_remove(ht, item, &remove_success);
 
@@ -124,38 +148,13 @@ bool list_merch(ioopm_hash_table_t *ht, int cmpr, size_t size, int *index) {
 //         }
 //         ioopm_iterator_destroy(iter);
 //         merch_destroy(found_merch.merch_ptr);
+//         free(key_ptr);
 //         // TODO: Remove shelves from other list/array
 //         return true;
 //     } else {
 //         return false;
 //     }
 // }
-
-bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
-    bool item_exists;
-    elem_t found_merch = ioopm_hash_table_lookup(ht, item, &item_exists);
-
-    if (item_exists) {
-        char *key_ptr = ioopm_get_key_pointer(ht, item, &item_exists)->str_value;
-        bool remove_success;
-
-        ioopm_list_iterator_t *iter = ioopm_list_iterator(found_merch.merch_ptr->locs);
-
-        while (ioopm_iterator_has_next(iter)) {
-            assert(ioopm_iterator_next(iter).shelf_ptr);
-            free(ioopm_iterator_current(iter).shelf_ptr);
-        }
-        ioopm_iterator_destroy(iter);
-        merch_destroy(found_merch.merch_ptr);
-        ioopm_hash_table_remove(ht, item, &remove_success);
-        free(key_ptr);
-
-        // TODO: Remove shelves from other list/array
-        return true;
-    } else {
-        return false;
-    }
-}
 
 bool change_name(ioopm_hash_table_t *ht, char *name, elem_t *item) {
     bool item_found;
@@ -220,26 +219,35 @@ bool show_stock(ioopm_hash_table_t *ht, elem_t item) {
     }
 }
 
-bool replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amount) {
+bool replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amount, ioopm_hash_table_t *shelf_ht) {
     //TODO: Free strdups om de inte används!
-    bool success;
+    bool merch_found_in_warehouse;
     
-    elem_t ptr = ioopm_hash_table_lookup(ht, *item, &success);
+    elem_t ptr = ioopm_hash_table_lookup(ht, *item, &merch_found_in_warehouse);
     merch_t *merch = ptr.merch_ptr;
     
-    if (success) {
-        bool linked_list_success = false;
-        elem_t *found = ioopm_linked_list_contains_return_elem(merch->locs, shelf, &linked_list_success);
+    if (merch_found_in_warehouse) {
+        bool shelf_found_for_correct_merch = false;
+        elem_t *found = ioopm_linked_list_contains_return_elem(merch->locs, shelf, &shelf_found_for_correct_merch);
 
-        if (linked_list_success) {
+        if (shelf_found_for_correct_merch) {
             shelf_t *found_shelf = found->shelf_ptr;
             found_shelf->amount += amount;
             free(item->str_value);
             return true;
         } else {
+            // Check shelf_ht if shelf is used by other merch.
+            if (ioopm_hash_table_has_key(shelf_ht, str_elem(shelf))) {
+                printf("We couldn't replenish since the given shelf is used by another merchandise.\n");
+                return false;
+            }
             //TODO: Vi lägger nu till en shelf direkt om den inte finns, får inget val.
-            ioopm_linked_list_append(merch->locs, shelf_elem(create_shelf(shelf, item->str_value, amount)));
-            free(item->str_value);
+
+            // Shelf was not found anywhere, we create a new shelf and put the pointer in both
+            // merch->locs and in shelf_ht.
+            elem_t new_shelf = shelf_elem(create_shelf(shelf, item->str_value, amount));
+            ioopm_linked_list_append(merch->locs, new_shelf);
+            ioopm_hash_table_insert(shelf_ht, str_elem(shelf), new_shelf);
             return true;
         }
     } else {

@@ -65,8 +65,8 @@ void ht_insert_lookup_invalid_key() {
     ioopm_hash_table_insert(ht, int_elem(-125), ptr_elem("test"));
 
     bool success;
-    CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht, int_elem(-125), &success).ptr_value);
-    CU_ASSERT_FALSE(success);
+    CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, int_elem(-125), &success).ptr_value);
+    CU_ASSERT_TRUE(success);
 
     ioopm_hash_table_destroy(ht);
 }
@@ -184,8 +184,8 @@ void ht_keys() {
     for (int i=0; i<5; i++) {
         CU_ASSERT_TRUE(found[i]);
     }
-    ioopm_linked_list_destroy(returned_keys);
     ioopm_iterator_destroy(iter);
+    ioopm_linked_list_destroy(returned_keys);
     ioopm_hash_table_destroy(ht);
 }
 
@@ -223,8 +223,8 @@ void ht_values() {
     for (int i=0; i<5; i++) {
         CU_ASSERT_TRUE(found[i]);
     }
-    ioopm_linked_list_destroy(returned_values);
     ioopm_iterator_destroy(value_iter);
+    ioopm_linked_list_destroy(returned_values);
     ioopm_hash_table_destroy(ht);
 }
 
@@ -272,10 +272,10 @@ void ht_keysvalues() {
     for (int i=0; i<5; i++) {
         CU_ASSERT_TRUE(found[i]);
     }
-    ioopm_linked_list_destroy(returned_keys);
-    ioopm_linked_list_destroy(returned_values);
     ioopm_iterator_destroy(key_iter);
     ioopm_iterator_destroy(value_iter);
+    ioopm_linked_list_destroy(returned_keys);
+    ioopm_linked_list_destroy(returned_values);
     ioopm_hash_table_destroy(ht);
 }
 

@@ -28,7 +28,7 @@ void edit_merch(ioopm_hash_table_t *ht);
 
 bool show_stock(ioopm_hash_table_t *ht, elem_t item);
 
-bool replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amount);
+bool replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amount, ioopm_hash_table_t *shelf_ht);
 
 void create_cart();
 

@@ -11,7 +11,7 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht);
 
 void ioopm_show_stock(ioopm_hash_table_t *ht);
 
-void ioopm_replenish_stock(ioopm_hash_table_t *ht);
+void ioopm_replenish_stock(ioopm_hash_table_t *ht, ioopm_hash_table_t *shelf_ht);
 
 void ioopm_create_cart();
 
