@@ -104,6 +104,7 @@ void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value) {
 }
 
 elem_t ioopm_hash_table_lookup(ioopm_hash_table_t *ht, elem_t key, bool *success) {
+  printf("\n\n%s\n\n", key.str_value);
   int bucket = abs(ht->hash_function(key) % No_Buckets);
   if (bucket < 0 || bucket >= No_Buckets ) {
     printf("\nInvalid key! %d - in ioopm_hash_table_lookup\n", bucket);

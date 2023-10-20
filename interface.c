@@ -60,8 +60,10 @@ void ioopm_delete_merch(ioopm_hash_table_t *ht) {
 void ioopm_edit_merch(ioopm_hash_table_t *ht) { 
     char *changed_str;
     int changed_int;
-    bool lookup_success;
     char *question;
+
+    bool lookup_success;
+    bool not_relevant;
     bool try_again = true;
     bool result = true;
     bool yes;
@@ -71,39 +73,41 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht) {
     elem_t ptr = ioopm_hash_table_lookup(ht, item, &lookup_success);
 
     if (lookup_success) {
+        elem_t *key = ioopm_get_key_pointer(ht, item, &not_relevant);
         question = "Do you want to change the name? Y/N: ";
         yes = yes_or_no(question);
         if (yes) {
             while (try_again) {
                 changed_str = ask_question_string("Give me a name: ");
-                result = change_name(ht, changed_str, &item);
+                result = change_name(ht, changed_str, item);
                 if (!result) {
                     free(changed_str);
                     try_again = yes_or_no("That name already exist, do you want to try again? Y/N; ");
                 } else {
-                    free(changed_str);
-                    try_again = false;
+                    free(key);
+                    // try_again = false;
                 }
             }
         }
-        if (result) {
-            item = str_elem(changed_str);
-            ptr = ioopm_hash_table_lookup(ht, str_elem(changed_str), &lookup_success);
-        }
-        
+        // if (result) {
+        //     item = str_elem(changed_str);
+        //     ptr = ioopm_hash_table_lookup(ht, str_elem(changed_str), &lookup_success);
+        //     printf("\n\nGOPRKGRPD\n\n");
+        // }
+
         question = "Do you want to change the description? Y/N: ";
         yes = yes_or_no(question);
         if (yes) {
             free(ptr.merch_ptr->desc);
             changed_str = ask_question_string("Write your new description:\n");
-            change_desc(ht, changed_str, &item);
+            change_desc(ht, changed_str, item);
         }
 
         question = "Do you want to change the price? Y/N: ";
         yes = yes_or_no(question);
         if (yes) {
             changed_int = ask_question_int("Write your new price:\n");
-            change_price(ht, changed_int, &item);
+            change_price(ht, changed_int, item);
         }
         free(item.str_value);
     } else {

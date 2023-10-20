@@ -87,6 +87,7 @@ int main() {
 
         free(choice_ptr);
     }
+    printf("\n\n%ld\n\n", ioopm_hash_table_size(warehouse));
     delete_all_items(warehouse);
     ioopm_hash_table_destroy(shelf_ht);
     ioopm_hash_table_destroy(warehouse);

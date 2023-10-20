@@ -16,11 +16,11 @@ void merch_destroy(merch_t *merch);
 
 bool list_merch(ioopm_hash_table_t *ht, int cmpr, size_t size, int *index);
 
-bool change_name(ioopm_hash_table_t *ht, char *name, elem_t *item);
+bool change_name(ioopm_hash_table_t *ht, char *name, elem_t item);
 
-void change_desc(ioopm_hash_table_t *ht, char *desc, elem_t *item);
+void change_desc(ioopm_hash_table_t *ht, char *desc, elem_t item);
 
-void change_price(ioopm_hash_table_t *ht, int price, elem_t *item);
+void change_price(ioopm_hash_table_t *ht, int price, elem_t item);
 
 bool delete_merch(ioopm_hash_table_t *ht, elem_t item);
 
