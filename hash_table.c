@@ -284,3 +284,26 @@ void ioopm_hash_table_apply_to_all(ioopm_hash_table_t *ht, ioopm_apply_function 
     }
   }
 }
+
+elem_t *ioopm_get_key_pointer(ioopm_hash_table_t *ht, elem_t key, bool *success) {
+  int bucket = abs(ht->hash_function(key) % No_Buckets);
+  if (bucket < 0 || bucket >= No_Buckets ) {
+    printf("\nInvalid key! %d - in ioopm_hash_table_lookup\n", bucket);
+    *success = false;
+    return &ptr_elem(NULL);
+  }
+
+  // Find previous entry for key
+  entry_t *entry = find_previous_entry_for_key(ht->buckets[bucket], key, ht->key_eq_function);
+  entry_t *next  = entry->next;
+
+  // If next isnt null we have what we were looking for.
+  if (next != NULL) {
+    *success = true;
+    return &next->key;
+  }
+  else {
+    *success = false;
+    return &ptr_elem(NULL);
+  }
+}

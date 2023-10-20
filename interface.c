@@ -17,6 +17,7 @@ void ioopm_add_merch(ioopm_hash_table_t *ht) {
         int price = ask_question_int("What is the price?: ");
         merch_create(ht, name, desc, price);
     } else {
+        free(name.str_value);
         printf("Item already exists!\n");   
     }
 }
@@ -53,6 +54,7 @@ void ioopm_delete_merch(ioopm_hash_table_t *ht) {
     else {
         printf("This item does not exist in our warehouse!\n");
     }
+    free(item.str_value);
 }
 
 void ioopm_edit_merch(ioopm_hash_table_t *ht) { 
@@ -66,7 +68,7 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht) {
     elem_t item = str_elem(ask_question_string("What item do you want to change?: "));
     // This runs twice since we run lookup inside change_change name and the others aswell, we can delete
     // from the but add return value from lookup as a pointer as a argument.
-    ioopm_hash_table_lookup(ht, item, &lookup_success);
+    elem_t ptr = ioopm_hash_table_lookup(ht, item, &lookup_success);
 
     if (lookup_success) {
         question = "Do you want to change the name? Y/N: ";
@@ -76,8 +78,10 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht) {
                 changed_str = ask_question_string("Give me a name: ");
                 result = change_name(ht, changed_str, &item);
                 if (!result) {
+                    free(changed_str);
                     try_again = yes_or_no("That name already exist, do you want to try again? Y/N; ");
                 } else {
+                    free(changed_str);
                     try_again = true;
                 }
             }
@@ -86,17 +90,20 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht) {
         question = "Do you want to change the description? Y/N: ";
         yes = yes_or_no(question);
         if (yes) {
+            free(ptr.merch_ptr->desc);
             changed_str = ask_question_string("Write your new description:\n");
             change_desc(ht, changed_str, &item);
         }
 
-        question = "Do you want to change the name? Y/N: ";
+        question = "Do you want to change the price? Y/N: ";
         yes = yes_or_no(question);
         if (yes) {
             changed_int = ask_question_int("Write your new price:\n");
             change_price(ht, changed_int, &item);
         }
+        free(item.str_value);
     } else {
+        free(item.str_value);
         printf("That item does not exist in our warehouse.\n");
     }
 }
@@ -104,6 +111,7 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht) {
 void ioopm_show_stock(ioopm_hash_table_t *ht) {
     elem_t item = str_elem(ask_question_string("What item do you want to see the stocks of?: "));
     show_stock(ht, item);
+    free(item.str_value);
 }
 
 void ioopm_replenish_stock(ioopm_hash_table_t *ht) {
@@ -111,7 +119,10 @@ void ioopm_replenish_stock(ioopm_hash_table_t *ht) {
     char *shelf = ask_question_shelf("What shelf do you want to replenish?: ");
     int amount = ask_question_int("What amount do you want to increase the stock with?: ");
 
-    replenish_stock(ht, &item, shelf, amount);
+    if (!replenish_stock(ht, &item, shelf, amount)) {
+        free(item.str_value);
+        free(shelf);
+    }   
 }
 
 void ioopm_create_cart() {

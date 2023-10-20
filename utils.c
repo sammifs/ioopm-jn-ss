@@ -51,7 +51,7 @@ bool not_empty(char *str)
   return strlen(str) > 0;
 }
 
-bool not_char(char *str) {
+bool is_char(char *str) {
   return strlen(str) == 1;
 }
 
@@ -174,9 +174,9 @@ char *ask_question_shelf(char *question)
     return ask_question(question, is_shelf, (convert_func) strdup).string_value;
 };
 
-char ask_question_char(char *question)
+char *ask_question_char(char *question)
 {
- return *(ask_question(question, not_char, (convert_func) strdup).string_value);
+ return (ask_question(question, is_char, (convert_func) strdup).string_value);
 }
 
 int string_length(char *inputstring) 
@@ -214,14 +214,14 @@ void println(char *inputstring)
 bool yes_or_no(char *qstn) {
     printf("%s", qstn);
     // TODO : Maybe toupper?
-    char answer = ask_question_char((""));
-    if (answer == 'Y') {
+    char *answer = ask_question_char((""));
+    if (*answer == 'Y') {
         return true;
-    } else if (answer == 'y') {
+    } else if (*answer == 'y') {
         return true;
-    } else if (answer == 'N') {
+    } else if (*answer == 'N') {
         return false;
-    } else if (answer == 'n') {
+    } else if (*answer == 'n') {
         return false;
     } else {
         printf("You did not give a valid answer! We take that as a no then.\n");

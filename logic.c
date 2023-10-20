@@ -68,10 +68,18 @@ elem_t merch_create(ioopm_hash_table_t *ht, elem_t name, char *desc, int price) 
 
     return name;
 }
+// DETTA ÄR FÖR TESTER
+// void merch_destroy(merch_t *merch) {
+//     // TODO: 
+//     ioopm_linked_list_destroy(merch->locs);
+//     free(merch);
+// }
 
+// DETTA ÄR FÖR EVENT_LOOP
 void merch_destroy(merch_t *merch) {
     // TODO: 
     ioopm_linked_list_destroy(merch->locs);
+    free(merch->desc);
     free(merch);
 }
 
@@ -101,11 +109,35 @@ bool list_merch(ioopm_hash_table_t *ht, int cmpr, size_t size, int *index) {
 }
 
 // TODO: Maybe change to bool function for better error handling?
+// bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
+//     bool item_exists;
+//     elem_t found_merch = ioopm_hash_table_lookup(ht, item, &item_exists);
+
+//     if (item_exists) {
+//         bool remove_success;
+//         ioopm_hash_table_remove(ht, item, &remove_success);
+
+//         ioopm_list_iterator_t *iter = ioopm_list_iterator(found_merch.merch_ptr->locs);
+
+//         while (ioopm_iterator_has_next(iter)) {
+//             assert(ioopm_iterator_next(iter).shelf_ptr);
+//             free(ioopm_iterator_current(iter).shelf_ptr);
+//         }
+//         ioopm_iterator_destroy(iter);
+//         merch_destroy(found_merch.merch_ptr);
+//         // TODO: Remove shelves from other list/array
+//         return true;
+//     } else {
+//         return false;
+//     }
+// }
+
 bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
     bool item_exists;
     elem_t found_merch = ioopm_hash_table_lookup(ht, item, &item_exists);
 
     if (item_exists) {
+        elem_t *key_ptr = ioopm_get_key_pointer(ht, item, &item_exists);
         bool remove_success;
         ioopm_hash_table_remove(ht, item, &remove_success);
 
@@ -117,6 +149,7 @@ bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
         }
         ioopm_iterator_destroy(iter);
         merch_destroy(found_merch.merch_ptr);
+        free(key_ptr);
         // TODO: Remove shelves from other list/array
         return true;
     } else {
@@ -143,7 +176,6 @@ bool change_name(ioopm_hash_table_t *ht, char *name, elem_t *item) {
 void change_desc(ioopm_hash_table_t *ht, char *desc, elem_t *item) {
     bool lookup_success;
     elem_t ptr = ioopm_hash_table_lookup(ht, *item, &lookup_success);
-
     merch_t *merch = ptr.merch_ptr; 
     merch->desc = desc;
 }
@@ -151,7 +183,6 @@ void change_desc(ioopm_hash_table_t *ht, char *desc, elem_t *item) {
 void change_price(ioopm_hash_table_t *ht, int price, elem_t *item) {
     bool lookup_success;
     elem_t ptr = ioopm_hash_table_lookup(ht, *item, &lookup_success);
-
     merch_t *merch = ptr.merch_ptr; 
     merch->price = price;
 }
