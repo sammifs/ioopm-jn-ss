@@ -33,7 +33,6 @@ void delete_all_items(ioopm_hash_table_t *ht)
 {
     char **merch_names = ioopm_hash_table_keys_char(ht);
     size_t size = ioopm_hash_table_size(ht);
-
     for (int i = 0; i < size; i++) {
         delete_merch(ht, str_elem(merch_names[i]));
     }
@@ -137,9 +136,8 @@ bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
     elem_t found_merch = ioopm_hash_table_lookup(ht, item, &item_exists);
 
     if (item_exists) {
-        elem_t *key_ptr = ioopm_get_key_pointer(ht, item, &item_exists);
+        char *key_ptr = ioopm_get_key_pointer(ht, item, &item_exists)->str_value;
         bool remove_success;
-        ioopm_hash_table_remove(ht, item, &remove_success);
 
         ioopm_list_iterator_t *iter = ioopm_list_iterator(found_merch.merch_ptr->locs);
 
@@ -149,7 +147,9 @@ bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
         }
         ioopm_iterator_destroy(iter);
         merch_destroy(found_merch.merch_ptr);
+        ioopm_hash_table_remove(ht, item, &remove_success);
         free(key_ptr);
+
         // TODO: Remove shelves from other list/array
         return true;
     } else {
@@ -161,7 +161,7 @@ bool change_name(ioopm_hash_table_t *ht, char *name, elem_t *item) {
     bool item_found;
     elem_t ptr = ioopm_hash_table_lookup(ht, *item, &item_found);
 
-    if (ioopm_hash_table_has_key(ht, str_elem(name)) || !item_found) {
+    if (ioopm_hash_table_has_key(ht, str_elem(name))) {
         return false;
     } else {
         // Merch name was not found. We can continue.
@@ -234,10 +234,12 @@ bool replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amou
         if (linked_list_success) {
             shelf_t *found_shelf = found->shelf_ptr;
             found_shelf->amount += amount;
+            free(item->str_value);
             return true;
         } else {
             //TODO: Vi lägger nu till en shelf direkt om den inte finns, får inget val.
             ioopm_linked_list_append(merch->locs, shelf_elem(create_shelf(shelf, item->str_value, amount)));
+            free(item->str_value);
             return true;
         }
     } else {

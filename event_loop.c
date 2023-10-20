@@ -35,7 +35,7 @@ int main() {
     ioopm_hash_table_t *warehouse = ioopm_hash_table_create(string_to_int, compare_str, NULL);
     bool loop = true;
     while (loop) {
-        char *choice_ptr = ask_question_char("What to do?\n");
+        char *choice_ptr = ask_question_char("What to do?");
         char choice = toupper(*choice_ptr);
 
         if (choice == 'A') {

@@ -300,7 +300,7 @@ elem_t *ioopm_get_key_pointer(ioopm_hash_table_t *ht, elem_t key, bool *success)
   // If next isnt null we have what we were looking for.
   if (next != NULL) {
     *success = true;
-    return &next->key;
+    return &(next->key);
   }
   else {
     *success = false;

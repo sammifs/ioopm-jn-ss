@@ -52,7 +52,7 @@ bool not_empty(char *str)
 }
 
 bool is_char(char *str) {
-  return strlen(str) == 1;
+  return strlen(str) <= 1;
 }
 
 char *read_string(char *buf, int buf_siz) 
@@ -216,14 +216,19 @@ bool yes_or_no(char *qstn) {
     // TODO : Maybe toupper?
     char *answer = ask_question_char((""));
     if (*answer == 'Y') {
+        free(answer);
         return true;
     } else if (*answer == 'y') {
+        free(answer);
         return true;
     } else if (*answer == 'N') {
+        free(answer);
         return false;
     } else if (*answer == 'n') {
+        free(answer);
         return false;
     } else {
+        free(answer);
         printf("You did not give a valid answer! We take that as a no then.\n");
         return false;
     }

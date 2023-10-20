@@ -82,11 +82,15 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht) {
                     try_again = yes_or_no("That name already exist, do you want to try again? Y/N; ");
                 } else {
                     free(changed_str);
-                    try_again = true;
+                    try_again = false;
                 }
             }
         }
-
+        if (result) {
+            item = str_elem(changed_str);
+            ptr = ioopm_hash_table_lookup(ht, str_elem(changed_str), &lookup_success);
+        }
+        
         question = "Do you want to change the description? Y/N: ";
         yes = yes_or_no(question);
         if (yes) {
