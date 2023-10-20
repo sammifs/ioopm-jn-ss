@@ -143,6 +143,7 @@ bool delete_merch(ioopm_hash_table_t *ht, elem_t item) {
 
         while (ioopm_iterator_has_next(iter)) {
             assert(ioopm_iterator_next(iter).shelf_ptr);
+            free(ioopm_iterator_current(iter).shelf_ptr->shelf);
             free(ioopm_iterator_current(iter).shelf_ptr);
         }
         ioopm_iterator_destroy(iter);
@@ -174,15 +175,13 @@ bool change_name(ioopm_hash_table_t *ht, char *name, elem_t item) {
 }
 void change_desc(ioopm_hash_table_t *ht, char *desc, elem_t item) {
     bool lookup_success;
-    elem_t ptr = ioopm_hash_table_lookup(ht, item, &lookup_success);
-    merch_t *merch = ptr.merch_ptr; 
+    merch_t *merch = ioopm_hash_table_lookup(ht, item, &lookup_success).merch_ptr; 
     merch->desc = desc;
 }
 
 void change_price(ioopm_hash_table_t *ht, int price, elem_t item) {
     bool lookup_success;
-    elem_t ptr = ioopm_hash_table_lookup(ht, item, &lookup_success);
-    merch_t *merch = ptr.merch_ptr; 
+    merch_t *merch = ioopm_hash_table_lookup(ht, item, &lookup_success).merch_ptr; 
     merch->price = price;
 }
 
@@ -223,8 +222,7 @@ bool replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amou
     //TODO: Free strdups om de inte används!
     bool merch_found_in_warehouse;
     
-    elem_t ptr = ioopm_hash_table_lookup(ht, *item, &merch_found_in_warehouse);
-    merch_t *merch = ptr.merch_ptr;
+    merch_t *merch = ioopm_hash_table_lookup(ht, *item, &merch_found_in_warehouse).merch_ptr;
     
     if (merch_found_in_warehouse) {
         bool shelf_found_for_correct_merch = false;
@@ -234,7 +232,7 @@ bool replenish_stock(ioopm_hash_table_t *ht, elem_t *item, char *shelf, int amou
             shelf_t *found_shelf = found->shelf_ptr;
             found_shelf->amount += amount;
             free(item->str_value);
-            return true;
+            return false;
         } else {
             // Check shelf_ht if shelf is used by other merch.
             if (ioopm_hash_table_has_key(shelf_ht, str_elem(shelf))) {
