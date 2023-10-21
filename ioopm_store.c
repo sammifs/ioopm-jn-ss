@@ -45,8 +45,25 @@ void ioopm_store_list_merch(ioopm_store_t *store) {
     int size = merch_hash_table_size(store->warehouse);
     qsort(merch_names, size, sizeof(char *), cmpstringp);
 
-    for (int i=0; i<size; i++) {
-        printf("%s\n", merch_names[i]);
+    int batch_size = 20;
+    int current_i = 0;
+
+    while (current_i < size) {
+
+        for (int i=current_i; i < current_i + batch_size && i < size; i++) {
+            printf("%s\n", merch_names[i]);
+        }
+
+        if (current_i + batch_size < size) {
+            char choice = toupper(ask_question_char(("Continue printing? (Y for yes): ")));
+
+            if (choice != 'Y') {
+                break;
+            }
+        }
+        else { break; }
+
+        current_i += batch_size;
     }
     free(merch_names);
 }
