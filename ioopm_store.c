@@ -35,7 +35,7 @@ void ioopm_store_destroy(ioopm_store_t *store) {
 bool ioopm_store_has_merch(ioopm_store_t *store, char*name) {
     return merch_hash_table_has_key(store->warehouse, name);
 }
-
+// TODO: Handle empty string as name
 bool ioopm_store_add_merch(ioopm_store_t *store, char *name, char *desc, int price) {
     return merch_hash_table_insert(store->warehouse, name, desc, price);
 }
@@ -80,15 +80,22 @@ bool ioopm_store_delete_merch(ioopm_store_t *store, char *name) {
     return merch_hash_table_remove(store->warehouse, name);
 }
 
-bool ioopm_store_edit_merch(ioopm_store_t *store, char *old_name, char *name, char *desc, int price) {
-    if (ioopm_store_has_merch(store, name)) {
-        // We are trying to edit the name into an already existing name, not allowed.
-        return false;
+int ioopm_store_edit_merch(ioopm_store_t *store, char *old_name, char *name, char *desc, int price) {
+    if (ioopm_store_has_merch(store, old_name)) {
+        if (ioopm_store_has_merch(store, name)) {
+            // We are trying to edit the name into an already existing name, not allowed.
+            // Return error code -2
+            return -2;
+        }
+        else {
+            ioopm_store_delete_merch(store, old_name);
+            ioopm_store_add_merch(store, name, desc, price);
+            return 0;
+        }
     }
     else {
-        ioopm_store_delete_merch(store, old_name);
-        ioopm_store_add_merch(store, name, desc, price);
-        return true;
+        // Merch we are trying to edit was not found. Return error code -1.
+        return -1;
     }
 }
 
@@ -106,11 +113,11 @@ int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *sh
         elem_t merch_of_found_shelf = hash_table_lookup(store->shelves, str_elem(shelf_name), &shelf_found);
         if (shelf_found && compare_str(merch_of_found_shelf, str_elem(merch_name))) {
             // This means we found the shelf and it belongs to the merch we want to replenish. Score!
-            // Now we find it in merch->locs and increase amount. Return 0 to indicate success.
+            // Now we find it in merch->locs and increase amount. Return 1 to indicate success.
             shelf_t *shelf = shelf_list_get_shelf(merch_get_locs(merch), shelf_name);
             shelf_increase_amount(shelf, amount);
 
-            return 0;
+            return 1;
         }
         else if (shelf_found) {
             // We found the shelf but it did not belong to our merch. Mixing on shelves is not 

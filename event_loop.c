@@ -71,7 +71,8 @@ int main() {
                 int new_price = ask_question_int("What is the new price?: ");
 
                 choice = ask_question_char("Are you sure you want to edit merch? (Y for yes): ");
-                if (choice == 'Y' && ioopm_store_edit_merch(store, name, new_name, new_desc, new_price)) {
+
+                if (choice == 'Y' && (0 == ioopm_store_edit_merch(store, name, new_name, new_desc, new_price))) {
                     printf("Merch was successfully edited!\n");
                 }
                 else {
@@ -111,7 +112,10 @@ int main() {
                 printf("No merch with that name!\n");
                 // shelf need to be freed since it wasn't input.
                 free(shelf);
-
+            }
+            else if (code == 1) {
+                printf("Merch was successfully replenished!\n");
+                free(shelf);
             }
             else {
                 printf("Merch was successfully replenished!\n");

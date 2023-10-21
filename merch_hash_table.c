@@ -39,6 +39,7 @@ char *merch_get_name(merch_t *merch) {
 }
 
 merch_hash_table_t *merch_hash_table_create() {
+    // str -> merch_t*
     // Non-generic hashtable, this hashtable will only work on string mapping to pointer.
     // This hashtable also has no use in checking value equality so that is left as NULL.
     merch_hash_table_t *ht = hash_table_create(string_to_int, compare_str, NULL);

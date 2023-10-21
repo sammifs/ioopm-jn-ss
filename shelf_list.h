@@ -8,6 +8,8 @@ typedef struct shelf shelf_t;
 
 void shelf_increase_amount(shelf_t *shelf, int amount);
 
+void shelf_decrease_amount(shelf_t *shelf, int amount);
+
 shelf_list_t *shelf_list_create();
 
 void shelf_list_append(shelf_list_t *list, char *shelf_name, int amount);

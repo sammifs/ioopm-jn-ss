@@ -43,6 +43,10 @@ void shelf_increase_amount(shelf_t *shelf, int amount) {
     shelf->amount += amount;
 }
 
+void shelf_decrease_amount(shelf_t *shelf, int amount) {
+    shelf->amount -= amount;
+}
+
 shelf_list_t *shelf_list_create() {
   shelf_list_t *new_list = calloc(1,sizeof(shelf_list_t));
 

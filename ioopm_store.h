@@ -35,17 +35,18 @@ void ioopm_store_list_merch(ioopm_store_t *store);
 
 bool ioopm_store_delete_merch(ioopm_store_t *store, char *name);
 
-bool ioopm_store_edit_merch(ioopm_store_t *store, char* old_name,char *name, char *desc, int price);
+int ioopm_store_edit_merch(ioopm_store_t *store, char* old_name,char *name, char *desc, int price);
 
 void ioopm_store_show_stock(ioopm_store_t *store, char *name);
 
 /// @brief Replenishes stock of given merch at given shelf by given amount. Works with error code
-/// returns, 0 is successful operation.
+/// returns, 0 or 1 is successful operation.
 /// @param store ioopm_store_t to be operated on.
 /// @param name name of the merch to replenish
 /// @param shelf shelf name to be replenished at, can be already existing for the merch or new.
 /// @param amount amount to replenish with.
-/// @return Returns 0 if successful. Returns -1 if merch name could not be found. 
+/// @return Returns 0 if successful.  Returns 1 if successful by increasing amount on 
+// already existing shelf. Returns -1 if merch name could not be found. 
 /// Returns -2 if shelf is occupied by another type of merch (mixing on shelves is not allowed).
 int ioopm_store_replenish_stock(ioopm_store_t *store, char *name, char *shelf, int amount);
 

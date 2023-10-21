@@ -11,7 +11,10 @@ INLUPP2 = ioopm_store.c shelf_list.c merch_hash_table.c datastructures/hash_tabl
 event_loop: event_loop.c 
 	$(CC) $(FLAGS) $^ $(INLUPP2) -o $@
 
+build_store_test: ioopm_store_test.c
+	$(CC) $(FLAGS) $^ $(INLUPP2) -lcunit -o $@
+
 clean:
 	rm -f event_loop
 
-.PHONY: event_loop
+.PHONY: event_loop build_store_test
