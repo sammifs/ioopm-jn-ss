@@ -122,10 +122,10 @@ int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *sh
             // Shelf wasnt found, this means it is free to claim for our merch! Create a new shelf
             // and place it in merch->locs. Then create an entry to the shelves hash table.
             // Return 0 to indicate success.
-            shelf_list_append(merch_get_locs(merch), shelf_name, merch_name, amount);
+            shelf_list_append(merch_get_locs(merch), shelf_name, amount);
 
             // VERY IMPORTANT to get the merch name pointer from merch_t *merch instead of from 
-            // merch_name now we can free merch_name in event_loop however we want 
+            // merch_name. Now we can free merch_name in event_loop however we want 
             // and the shelves hashtable is free from responsiblity.
             hash_table_insert(store->shelves, str_elem(shelf_name), str_elem(merch_get_name(merch)));
             return 0;

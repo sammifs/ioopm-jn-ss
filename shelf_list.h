@@ -10,7 +10,7 @@ void shelf_increase_amount(shelf_t *shelf, int amount);
 
 shelf_list_t *shelf_list_create();
 
-void shelf_list_append(shelf_list_t *list, char *shelf_name, char *merch_name, int amount);
+void shelf_list_append(shelf_list_t *list, char *shelf_name, int amount);
 
 shelf_t *shelf_list_get_shelf(shelf_list_t *list, char *name);
 

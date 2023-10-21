@@ -23,11 +23,10 @@ struct shelf_list
   shelf_eq_function eq_fun;
 };
 
-shelf_t *shelf_create(char *shelf_name, char *merch_name, int amount, shelf_t *next) {
+shelf_t *shelf_create(char *shelf_name, int amount, shelf_t *next) {
     shelf_t *result = calloc(1, sizeof(shelf_t));
 
     result->shelf_name = shelf_name;
-    result->merch_name = merch_name;
     result->amount = amount;
     result->next = next;
 
@@ -35,8 +34,7 @@ shelf_t *shelf_create(char *shelf_name, char *merch_name, int amount, shelf_t *n
 }
 
 void shelf_destroy(shelf_t *shelf) {
-  // NOT RESPONSIBLE FOR merch_name, IS HOWEVER RESPONSIBLE FOR
-  // shelf_name.
+  // shelf_t IS RESPONSBILE for shelf_name and WILL destroy it.
   free(shelf->shelf_name);
   free(shelf);
 }
@@ -63,9 +61,9 @@ bool shelf_list_is_empty(shelf_list_t *list) {
   return shelf_list_size(list) == 0;
 }
 
-void shelf_list_append(shelf_list_t *list, char *shelf_name, char *merch_name, int amount) {
+void shelf_list_append(shelf_list_t *list, char *shelf_name, int amount) {
   if (shelf_list_is_empty(list)) {
-    list->first = shelf_create(shelf_name, merch_name, amount, NULL);
+    list->first = shelf_create(shelf_name, amount, NULL);
     list->size++;
   }
   else {
@@ -73,7 +71,7 @@ void shelf_list_append(shelf_list_t *list, char *shelf_name, char *merch_name, i
     while (current->next != NULL) {
       current = current->next;
     }
-    current->next = shelf_create(shelf_name, merch_name, amount, NULL);
+    current->next = shelf_create(shelf_name, amount, NULL);
     list->size++;
   }
 }
