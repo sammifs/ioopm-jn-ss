@@ -15,6 +15,6 @@ build_store_test: ioopm_store_test.c
 	$(CC) $(FLAGS) $^ $(INLUPP2) -lcunit -o $@
 
 clean:
-	rm -f event_loop
+	rm -f event_loop build_store_test
 
 .PHONY: event_loop build_store_test

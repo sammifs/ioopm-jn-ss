@@ -6,6 +6,7 @@ struct merch
   int price;   // holds the price
   char *desc;
   shelf_list_t *locs; 
+  int amount;
 };
 
 merch_t *merch_create(char* name, char *desc, int price) {
@@ -15,6 +16,7 @@ merch_t *merch_create(char* name, char *desc, int price) {
     result->desc = desc;
     result->price = price;
     result->locs = shelf_list_create();
+    result->amount = 0;
 
     return result;
 }
@@ -36,6 +38,18 @@ shelf_list_t *merch_get_locs(merch_t *merch) {
 
 char *merch_get_name(merch_t *merch) {
     return merch->name;
+}
+
+int merch_get_amount(merch_t *merch) {
+    return merch->amount;
+}
+
+int merch_get_price(merch_t *merch) {
+    return merch->price;
+}
+
+void merch_increase_amount(merch_t *merch, int amount) {
+    merch->amount += amount;
 }
 
 merch_hash_table_t *merch_hash_table_create() {

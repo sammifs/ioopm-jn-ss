@@ -41,6 +41,7 @@ bool is_float(char *str);
 
 answer_t ask_question(char *question, check_func check, convert_func convert);
 int ask_question_int(char *question);
+int ask_question_positive_int(char *question);
 double ask_question_float(char *question);
 char *ask_question_string(char *question);
 char *ask_question_shelf(char *question);

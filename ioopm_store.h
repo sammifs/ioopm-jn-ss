@@ -55,10 +55,12 @@ void ioopm_store_create_cart();
 
 int ioopm_store_get_cart_index(ioopm_store_t *store);
 
+bool ioopm_store_has_cart(ioopm_store_t *store, int cart_index);
+
 bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index);
 
-void ioopm_store_add_to_cart();
+int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount);
 
-void ioopm_store_calculate_cost_cart();
+int ioopm_store_calculate_cost_cart(ioopm_store_t *store, int cart_index, bool *success);
 
 void ioopm_store_checkout_cart();

@@ -151,10 +151,31 @@ bool is_shelf(char *str)
   return true;
 }
 
+bool is_positive_number(char *str)
+{
+  int length = strlen(str);
+
+  if (str[0] == '0' && length == 1) { return false; }
+
+  for (int i = 0; i < length; ++i) 
+  {
+    if (!isdigit(str[i])) 
+    {
+      return false;
+    }
+  }  
+  return true;
+}
+
 int ask_question_int(char *question)
 {
   answer_t answer = ask_question(question, is_number, (convert_func) atoi);
   return answer.int_value; // svaret som ett heltal
+}
+
+int ask_question_positive_int(char *question) {
+  answer_t answer = ask_question(question, is_positive_number, (convert_func) atoi);
+  return answer.int_value;
 }
 
 double ask_question_float(char *question)

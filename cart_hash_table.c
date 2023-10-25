@@ -23,6 +23,7 @@ order_t *order_create(char *name, int amount, int price, order_t *next) {
 
 void order_destroy(order_t *order) {
     // TODO : Should order_t be responsible for order->merch_name??
+    free(order->merch_name);
     free(order);
 }
 

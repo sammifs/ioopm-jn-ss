@@ -12,6 +12,12 @@ shelf_list_t *merch_get_locs(merch_t *merch);
 
 char *merch_get_name(merch_t *merch);
 
+int merch_get_amount(merch_t *merch);
+
+int merch_get_price(merch_t *merch);
+
+void merch_increase_amount(merch_t *merch, int amount);
+
 merch_hash_table_t *merch_hash_table_create();
 
 void merch_hash_table_destroy(merch_hash_table_t *ht);

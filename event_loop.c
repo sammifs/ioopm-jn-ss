@@ -30,7 +30,7 @@ int main() {
         if (choice == 'A') {
             char *name = ask_question_string("What is the name of the merch?: ");
             char *desc = ask_question_string("What is the description?:  ");
-            int price = ask_question_int("What is the price?:   ");
+            int price = ask_question_positive_int("What is the price?:   ");
             if (ioopm_store_add_merch(store, name, desc, price)) {
                 printf("Merch was successfully added!\n");
             } else {
@@ -68,7 +68,7 @@ int main() {
             if (ioopm_store_has_merch(store, name)) {
                 char *new_name = ask_question_string("What is the new name?:  ");
                 char *new_desc = ask_question_string("What is the new description?:  ");
-                int new_price = ask_question_int("What is the new price?: ");
+                int new_price = ask_question_positive_int("What is the new price?: ");
 
                 choice = ask_question_char("Are you sure you want to edit merch? (Y for yes): ");
 
@@ -99,7 +99,7 @@ int main() {
         else if (choice == 'P') {
             char *name = ask_question_string("What merch do you want to replenish?:  ");
             char *shelf = ask_question_shelf("What shelf do you want to replenish?: ");
-            int amount = ask_question_int("Amount to replenish?: ");
+            int amount = ask_question_positive_int("Amount to replenish?: ");
             
             int code = ioopm_store_replenish_stock(store, name, shelf, amount);
 
@@ -122,17 +122,57 @@ int main() {
             }
             free(name);
         }
-        else if (choice == 'R') {
-            int cart_index = ask_question_int("What index on the cart?");
-            ioopm_store_remove_cart()
-        }
         else if (choice == 'C') {
             ioopm_store_create_cart(store);
             printf("Cart added with index %d.\n", ioopm_store_get_cart_index(store));
         }
+        else if (choice == 'R') {
+            int cart_index = ask_question_int("What index on the cart?");
+            if (ioopm_store_has_cart(store, cart_index)) {
+                choice = toupper(ask_question_char("Cart found - are you sure you want to delete? (Y for yes): "));
+                if (choice == 'Y') {
+                    ioopm_store_remove_cart(store, cart_index);
+                    printf("Cart was successfully removed.\n");
+                }
+                else {
+                    printf("Cart was NOT removed.\n");
+                }
+            }
+            else {
+                printf("Cart was not found.\n");
+            }
+        }
+        else if (choice == '+') {
+            int cart_index = ask_question_int("What index?: ");
+            char *merch_name = ask_question_string("What merch?: ");
+            int amount = ask_question_positive_int("How many?: ");
+            int result = ioopm_store_add_to_cart(store, cart_index, merch_name, amount);
+            if (result == -2) {
+                printf("Merch not found in warehouse!\n");
+                free(merch_name);
+            } else if (result == -1) {
+                printf("No cart with that index!\n");
+                free(merch_name);
+            } else if (result == -3) {
+                printf("That amount of that merch does not exist in our warehouse!\n");
+                free(merch_name);
+            } else {
+                printf("Order added successfully to cart!\n");
+            }
+        }
         else if (choice == 'Q') {
             ioopm_store_destroy(store);
             loop = false;
+        }
+        else if (choice == '=') {
+            int cart_index = ask_question_int("What cart do you want to calculate?: ");
+            bool cart_found;
+            int cost = ioopm_store_calculate_cost_cart(store, cart_index, &cart_found);
+            if (cart_found) {
+                printf("Cost of cart %d\n", cost);
+            } else {
+                printf("Cart not found!\n");
+            }
         }
     }
     return 0;

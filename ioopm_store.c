@@ -122,6 +122,7 @@ int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *sh
             // Now we find it in merch->locs and increase amount. Return 1 to indicate success.
             shelf_t *shelf = shelf_list_get_shelf(merch_get_locs(merch), shelf_name);
             shelf_increase_amount(shelf, amount);
+            merch_increase_amount(merch, amount);
 
             return 1;
         }
@@ -136,6 +137,7 @@ int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *sh
             // and place it in merch->locs. Then create an entry to the shelves hash table.
             // Return 0 to indicate success.
             shelf_list_append(merch_get_locs(merch), shelf_name, amount);
+            merch_increase_amount(merch, amount);
 
             // VERY IMPORTANT to get the merch name pointer from merch_t *merch instead of from 
             // merch_name. Now we can free merch_name in event_loop however we want 
@@ -151,20 +153,59 @@ int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *sh
 }
 
 void ioopm_store_create_cart(ioopm_store_t *store) {
-    cart_hash_table_insert(store->carts, store->cart_index);
     store->cart_index++;
+    cart_hash_table_insert(store->carts, store->cart_index);
 }
 
 int ioopm_store_get_cart_index(ioopm_store_t *store) {
     return store->cart_index;
 }
 
+bool ioopm_store_has_cart(ioopm_store_t *store, int cart_index) {
+    bool success;
+    cart_hash_table_lookup(store->carts, cart_index, &success);
+    return success;
+}
+
+//TODO: Lägg till "free" för de strdup:ade namnen
 bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index) {
     return cart_hash_table_remove(store->carts, cart_index);
 }
 
-void ioopm_store_add_to_cart();
+bool amount_exists(merch_t *merch, int amount) {
+    int existing_amount = merch_get_amount(merch);
+    if (amount <= existing_amount) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
-void ioopm_store_calculate_cost_cart();
+// strdup merch_name
+int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount) {
+    bool merch_found;
+    merch_t *merch = merch_hash_table_lookup(store->warehouse, merch_name, &merch_found);
+
+    if (merch_found) {
+        if (amount_exists(merch, amount)) {
+            if (cart_hash_table_append_order(store->carts, cart_index, merch_name, amount, merch_get_price(merch))) {
+                // Everything worked. Return 0.
+                return 0;
+            } else {
+                // Cart not found. Return error code -1.
+                return -1;
+            }
+        } else {
+            return -3;
+        }
+    } else {
+        // Merch not found. Return error code -2.
+        return -2;
+    }
+}
+
+int ioopm_store_calculate_cost_cart(ioopm_store_t *store, int cart_index, bool *success) {
+    return cart_hash_table_calculate_cost(store->carts, cart_index, success);
+}
 
 void ioopm_store_checkout_cart();
