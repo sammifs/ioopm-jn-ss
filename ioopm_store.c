@@ -6,6 +6,9 @@ struct store {
     // hash table mapping shelf name i.e "A34" to merch name i.e "Ost". Used to
     // avoid mixing merch on shelf.
     hash_table_t *shelves;
+
+    int cart_index;
+    cart_hash_table_t *carts;
 };
 
 ioopm_store_t *ioopm_store_create() {
@@ -18,11 +21,14 @@ ioopm_store_t *ioopm_store_create() {
     // value equality is never checked so its NULL.
     store->shelves = hash_table_create(string_to_int, compare_str, NULL);
 
+    store->cart_index = 0;
+    store->carts = cart_hash_table_create();
     return store;
 }
 
 void ioopm_store_destroy(ioopm_store_t *store) {
     merch_hash_table_destroy(store->warehouse);
+    cart_hash_table_destroy(store->carts);
 
     // store->shelves is not responsible for any of the strdups it carries.
     // Thats why we can do a simple hash_table_destroy on it.
@@ -144,9 +150,18 @@ int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *sh
     }
 }
 
-void ioopm_store_create_cart();
+void ioopm_store_create_cart(ioopm_store_t *store) {
+    cart_hash_table_insert(store->carts, store->cart_index);
+    store->cart_index++;
+}
 
-void ioopm_store_remove_cart();
+int ioopm_store_get_cart_index(ioopm_store_t *store) {
+    return store->cart_index;
+}
+
+bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index) {
+    return cart_hash_table_remove(store->carts, cart_index);
+}
 
 void ioopm_store_add_to_cart();
 

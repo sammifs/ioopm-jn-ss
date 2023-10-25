@@ -3,7 +3,7 @@ FLAGS =-Wall -g
 GCOVFLAGS = -fprofile-arcs -ftest-coverage
 MEM = valgrind --leak-check=full
 
-INLUPP2 = ioopm_store.c shelf_list.c merch_hash_table.c datastructures/hash_table.c datastructures/linked_list.c utils.c
+INLUPP2 = ioopm_store.c shelf_list.c merch_hash_table.c cart_hash_table.c datastructures/hash_table.c datastructures/linked_list.c utils.c
 
 %.o: %.c %.h
 	$(CC) $(FLAGS) $< -c

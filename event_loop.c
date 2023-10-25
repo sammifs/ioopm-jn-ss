@@ -122,6 +122,14 @@ int main() {
             }
             free(name);
         }
+        else if (choice == 'R') {
+            int cart_index = ask_question_int("What index on the cart?");
+            ioopm_store_remove_cart()
+        }
+        else if (choice == 'C') {
+            ioopm_store_create_cart(store);
+            printf("Cart added with index %d.\n", ioopm_store_get_cart_index(store));
+        }
         else if (choice == 'Q') {
             ioopm_store_destroy(store);
             loop = false;

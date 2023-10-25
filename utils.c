@@ -18,6 +18,12 @@ int string_to_int(elem_t str) {
     return hash;
 }
 
+int elem_t_to_int(elem_t elem) {
+  return elem.int_value;
+}
+
+
+
 int cmpstringp(const void *p1, const void *p2)
 {
   return strcmp(*(char *const *)p1, *(char *const *)p2);

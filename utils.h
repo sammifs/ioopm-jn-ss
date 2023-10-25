@@ -21,6 +21,8 @@ typedef union {
 typedef bool(*check_func)(char *);
 typedef answer_t(*convert_func)(char *);
 
+int elem_t_to_int(elem_t elem);
+
 int cmpstringp(const void *p1, const void *p2);
 
 int string_to_int(elem_t str);

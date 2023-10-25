@@ -1,6 +1,7 @@
 #pragma once
 
 #include "merch_hash_table.h"
+#include "cart_hash_table.h"
 
 typedef struct store ioopm_store_t;
 
@@ -52,7 +53,9 @@ int ioopm_store_replenish_stock(ioopm_store_t *store, char *name, char *shelf, i
 
 void ioopm_store_create_cart();
 
-void ioopm_store_remove_cart();
+int ioopm_store_get_cart_index(ioopm_store_t *store);
+
+bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index);
 
 void ioopm_store_add_to_cart();
 
