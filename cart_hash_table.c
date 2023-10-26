@@ -1,8 +1,6 @@
 #include "cart_hash_table.h"
 
 
-typedef struct order order_t;
-
 struct order {
     char *merch_name;
     int amount;
@@ -147,4 +145,20 @@ int cart_hash_table_calculate_cost(cart_hash_table_t *ht, int cart_index, bool *
         // cart_hash_table_lookup, we return 0 but this value should never be read.
         return 0;
     }
+}
+
+order_t *cart_get_first_order(cart_t *cart) {
+    return cart->first;
+}
+
+order_t *cart_get_next_order(order_t *order) {
+    return order->next;
+}
+
+int order_get_amount(order_t *order) {
+    return order->amount;
+}
+
+char *order_get_merch(order_t *order) {
+    return order->merch_name;
 }

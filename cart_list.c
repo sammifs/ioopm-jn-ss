@@ -3,7 +3,7 @@
 struct cart_list {
     order_t first;
     int size;
-    int i;
+    int i;  // Vad gör detta?
 };
 
 struct order {
@@ -69,7 +69,7 @@ bool cart_list_is_empty(cart_list_t *list) {
 
 int cart_list_calculate_cost(cart_list_t *list) {
     int cost = 0;
-    order_t order = list->first
+    order_t order = list->first;
     while(order) {
         cost = order.
     }

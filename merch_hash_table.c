@@ -119,3 +119,19 @@ bool merch_hash_table_remove(merch_hash_table_t *ht, char *name) {
 
     }
 }
+
+int decrease_total_amount(merch_t *merch_to_change, int decreasing_amount) {
+    int amount = merch_to_change->amount;
+    if (amount > decreasing_amount) {
+        amount = amount - decreasing_amount;
+        return merch_to_change->amount;
+    } else {
+        merch_to_change->amount = 0;
+        return merch_to_change->amount;
+    }
+}
+
+
+shelf_list_t *get_shelf_list(merch_t *merch) {
+    return merch->locs;
+}

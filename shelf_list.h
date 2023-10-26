@@ -8,7 +8,7 @@ typedef struct shelf shelf_t;
 
 void shelf_increase_amount(shelf_t *shelf, int amount);
 
-void shelf_decrease_amount(shelf_t *shelf, int amount);
+int shelf_decrease_amount_with_delete(shelf_list_t *locs, int amount);
 
 shelf_list_t *shelf_list_create();
 
@@ -19,3 +19,5 @@ shelf_t *shelf_list_get_shelf(shelf_list_t *list, char *name);
 void shelf_list_print_name_amount(shelf_list_t *list);
 
 void shelf_list_destroy(shelf_list_t *list);
+
+void destroy_first_shelf(shelf_list_t *shelf_list, shelf_t *shelf);

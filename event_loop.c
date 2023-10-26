@@ -169,9 +169,20 @@ int main() {
             bool cart_found;
             int cost = ioopm_store_calculate_cost_cart(store, cart_index, &cart_found);
             if (cart_found) {
-                printf("Cost of cart %d\n", cost);
+                printf("Cost of cart %d: %dkr\n", cart_index, cost);
             } else {
                 printf("Cart not found!\n");
+            }
+        } 
+        else if (choice == 'O') {
+            int cart_index = ask_question_int("What cart do you want to checkout?: ");
+            bool calc_done;
+            int result = ioopm_store_calculate_cost_cart(store, cart_index, &calc_done);
+            bool cart_found = ioopm_store_checkout_cart(store, cart_index);
+            if (cart_found) {
+                printf("Cart %d costed %dkr and is now checked out!\nThank you for your business!\n", cart_index, result);
+            } else {
+                printf("That cart was not found, sorry!\n");
             }
         }
     }

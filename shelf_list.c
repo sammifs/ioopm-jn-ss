@@ -5,7 +5,7 @@ struct shelf
 {
   char *shelf_name;       // holds shelf as for exampel A23
   char *merch_name; // name of merchandise on shelf
-  int amount;   // holds the amount in "ören"
+  int amount;   // holds the amount
 
   shelf_t *next;
 };
@@ -39,12 +39,28 @@ void shelf_destroy(shelf_t *shelf) {
   free(shelf);
 }
 
+void  destroy_first_shelf(shelf_list_t *shelf_list, shelf_t *shelf) {
+  shelf_t *next = shelf->next;
+  shelf_destroy(shelf);
+  shelf_list->first = next;
+}
+
 void shelf_increase_amount(shelf_t *shelf, int amount) {
     shelf->amount += amount;
 }
 
-void shelf_decrease_amount(shelf_t *shelf, int amount) {
-    shelf->amount -= amount;
+void shelf_decrease_amount_with_delete(shelf_list_t *locs, int amount) {
+  while (amount != 0) {
+    shelf_t *shelf = locs->first;
+    if (shelf->amount > amount){
+      shelf->amount -= amount;
+      amount = 0;
+    } else {
+      amount = amount - shelf->amount;
+      destroy_first_shelf(locs, shelf);
+      amount -= shelf->amount;
+    }
+  }
 }
 
 shelf_list_t *shelf_list_create() {

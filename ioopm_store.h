@@ -63,4 +63,4 @@ int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_na
 
 int ioopm_store_calculate_cost_cart(ioopm_store_t *store, int cart_index, bool *success);
 
-void ioopm_store_checkout_cart();
+bool ioopm_store_checkout_cart(ioopm_store_t *store, int cart_index);

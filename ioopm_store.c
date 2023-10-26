@@ -208,4 +208,33 @@ int ioopm_store_calculate_cost_cart(ioopm_store_t *store, int cart_index, bool *
     return cart_hash_table_calculate_cost(store->carts, cart_index, success);
 }
 
-void ioopm_store_checkout_cart();
+void checkout(ioopm_store_t *store, cart_t *cart) {
+    order_t *order = cart_get_first_order(cart);
+
+    while (order != NULL) {
+        int amount = order_get_amount(order);
+        char *item = order_get_merch(order);
+        bool merch_found;
+
+        merch_t *merch_to_change = merch_hash_table_lookup(store->warehouse, item, &merch_found);
+        shelf_list_t *locs = get_shelf_list(merch_to_change);
+
+        decrease_total_amount(merch_to_change, amount);
+        shelf_decrease_amount_with_delete(locs, amount);
+        
+        order = cart_get_next_order(order);
+    }
+}
+
+bool ioopm_store_checkout_cart(ioopm_store_t *store, int cart_index) {
+    bool cart_found;
+    cart_t *cart = cart_hash_table_lookup(store->carts, cart_index, &cart_found);
+    if (cart_found) {
+        checkout(store, cart);
+        // Remove the cart that has been checked out
+        cart_hash_table_remove(store->carts, cart_index);
+        return true;
+    } else {
+        return false;
+    }
+}
