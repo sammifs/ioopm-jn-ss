@@ -61,6 +61,8 @@ bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index);
 
 int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount);
 
+void ioopm_store_remove_from_cart(ioopm_store_t *store, int cart_index);
+
 int ioopm_store_calculate_cost_cart(ioopm_store_t *store, int cart_index, bool *success);
 
 bool ioopm_store_checkout_cart(ioopm_store_t *store, int cart_index);

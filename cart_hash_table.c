@@ -69,6 +69,25 @@ void cart_append(cart_t *cart, char *name, int amount, int price) {
     }
 }
 
+bool cart_remove_order_with_merch(cart_t *cart, char* merch_name) {
+    order_t *previous = cart->first;
+    if (previous == NULL) { return false; }
+    if (strcmp(previous->merch_name, merch_name) == 0) {
+        cart->first = previous->next;
+        order_destroy(previous);
+        return true;
+    }
+    order_t *current = previous->next;
+    while (current != NULL) {
+        if (strcmp(current->merch_name, merch_name) == 0) {
+            previous->next = current->next;
+            order_destroy(current);
+            return true;
+        }
+    }
+    return false;
+}
+
 int cart_calculate_cost(cart_t *cart) {
     int cost = 0;
     order_t *order = cart->first;
@@ -145,6 +164,37 @@ int cart_hash_table_calculate_cost(cart_hash_table_t *ht, int cart_index, bool *
         // cart_hash_table_lookup, we return 0 but this value should never be read.
         return 0;
     }
+}
+
+int cart_hash_table_order_amount_for_merch(cart_hash_table_t *ht, char *merch_name) {
+    list_t *ls = hash_table_values(ht);
+    list_iterator_t *iter = list_iterator(ls);
+
+    int amount = 0;
+    for (int i=0; iterator_has_next(iter); i++) {
+        order_t *order = ((cart_t *) iterator_next(iter).ptr_value)->first;
+        while (order != NULL) {
+            if (strcmp(order->merch_name, merch_name) == 0) {
+                amount += order->amount;
+            }
+            order = order->next;
+        }
+    }
+    iterator_destroy(iter);
+    linked_list_destroy(ls);
+    return amount;
+}
+
+void carts_hash_table_remove_orders(cart_hash_table_t *ht, char *merch_name) {
+    list_t *ls = hash_table_values(ht);
+    list_iterator_t *iter = list_iterator(ls);
+
+    while (iterator_has_next(iter)) {
+        cart_t *cart = iterator_next(iter).ptr_value;
+        while (cart_remove_order_with_merch(cart, merch_name));
+    }
+    iterator_destroy(iter);
+    linked_list_destroy(ls);
 }
 
 order_t *cart_get_first_order(cart_t *cart) {

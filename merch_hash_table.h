@@ -35,5 +35,3 @@ merch_t *merch_hash_table_lookup(merch_hash_table_t *ht, char *name, bool *succe
 bool merch_hash_table_remove(merch_hash_table_t *ht, char *name);
 
 int decrease_total_amount(merch_t *merch_to_change, int decreasing_amount);
-
-shelf_list_t *get_shelf_list(merch_t *merch);

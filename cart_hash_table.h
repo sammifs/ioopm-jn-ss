@@ -24,6 +24,10 @@ int cart_hash_table_calculate_cost(cart_hash_table_t *ht, int cart_index, bool *
 
 void cart_list_checkout();
 
+int cart_hash_table_order_amount_for_merch(cart_hash_table_t *ht, char *merch_name);
+
+void carts_hash_table_remove_orders(cart_hash_table_t *ht, char *name);
+
 order_t *cart_get_first_order(cart_t *cart);
 
 order_t *cart_get_next_order(order_t *order);

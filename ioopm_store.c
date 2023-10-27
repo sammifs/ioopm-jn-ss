@@ -83,6 +83,7 @@ void delete_merch_from_shelves_ht(ioopm_store_t *store, char *name) {
 }
 bool ioopm_store_delete_merch(ioopm_store_t *store, char *name) {
     delete_merch_from_shelves_ht(store, name);
+    carts_hash_table_remove_orders(store->carts, name);
     return merch_hash_table_remove(store->warehouse, name);
 }
 
@@ -172,9 +173,10 @@ bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index) {
     return cart_hash_table_remove(store->carts, cart_index);
 }
 
-bool amount_exists(merch_t *merch, int amount) {
+bool amount_exists(cart_hash_table_t *carts, merch_t *merch, int amount) {
     int existing_amount = merch_get_amount(merch);
-    if (amount <= existing_amount) {
+    int amount_within_orders = cart_hash_table_order_amount_for_merch(carts, merch_get_name(merch));
+    if (amount + amount_within_orders <= existing_amount) {
         return true;
     } else {
         return false;
@@ -187,7 +189,7 @@ int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_na
     merch_t *merch = merch_hash_table_lookup(store->warehouse, merch_name, &merch_found);
 
     if (merch_found) {
-        if (amount_exists(merch, amount)) {
+        if (amount_exists(store->carts, merch, amount)) {
             if (cart_hash_table_append_order(store->carts, cart_index, merch_name, amount, merch_get_price(merch))) {
                 // Everything worked. Return 0.
                 return 0;
@@ -204,6 +206,10 @@ int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_na
     }
 }
 
+void ioopm_store_remove_from_cart(ioopm_store_t *store, int cart_index) {
+    // TODO : stub
+}
+
 int ioopm_store_calculate_cost_cart(ioopm_store_t *store, int cart_index, bool *success) {
     return cart_hash_table_calculate_cost(store->carts, cart_index, success);
 }
@@ -217,10 +223,28 @@ void checkout(ioopm_store_t *store, cart_t *cart) {
         bool merch_found;
 
         merch_t *merch_to_change = merch_hash_table_lookup(store->warehouse, item, &merch_found);
-        shelf_list_t *locs = get_shelf_list(merch_to_change);
+        shelf_list_t *locs = merch_get_locs(merch_to_change);
 
         decrease_total_amount(merch_to_change, amount);
-        shelf_decrease_amount_with_delete(locs, amount);
+        list_t *shelves_to_delete = shelf_decrease_amount(locs, amount);
+
+        if (shelves_to_delete != NULL) {
+            list_iterator_t *iter = list_iterator(shelves_to_delete);
+
+            while (iterator_has_next(iter)) {
+                char *shelf_name = iterator_next(iter).ptr_value;
+
+                bool success;
+                hash_table_remove(store->shelves, ptr_elem(shelf_name), &success);
+            }
+            iterator_destroy(iter);
+            linked_list_remove(shelves_to_delete,0);
+
+            for (int i=0; i<linked_list_size(shelves_to_delete); i++) {
+                destroy_first_shelf(locs);
+            }
+            linked_list_destroy(shelves_to_delete);
+        }
         
         order = cart_get_next_order(order);
     }

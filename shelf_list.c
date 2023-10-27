@@ -33,15 +33,19 @@ shelf_t *shelf_create(char *shelf_name, int amount, shelf_t *next) {
     return result;
 }
 
+char *shelf_get_shelf_name(shelf_t *shelf) {
+  return shelf->shelf_name;
+}
+
 void shelf_destroy(shelf_t *shelf) {
   // shelf_t IS RESPONSBILE for shelf_name and WILL destroy it.
   free(shelf->shelf_name);
   free(shelf);
 }
 
-void  destroy_first_shelf(shelf_list_t *shelf_list, shelf_t *shelf) {
-  shelf_t *next = shelf->next;
-  shelf_destroy(shelf);
+void  destroy_first_shelf(shelf_list_t *shelf_list) {
+  shelf_t *next = shelf_list->first->next;
+  shelf_destroy(shelf_list->first);
   shelf_list->first = next;
 }
 
@@ -49,18 +53,25 @@ void shelf_increase_amount(shelf_t *shelf, int amount) {
     shelf->amount += amount;
 }
 
-void shelf_decrease_amount_with_delete(shelf_list_t *locs, int amount) {
-  while (amount != 0) {
-    shelf_t *shelf = locs->first;
+list_t *shelf_decrease_amount(shelf_list_t *locs, int amount) {
+  list_t *linked_list = linked_list_create(NULL);
+  shelf_t *shelf = locs->first;
+  while (amount != 0 && shelf != NULL) {
     if (shelf->amount > amount){
       shelf->amount -= amount;
       amount = 0;
     } else {
-      amount = amount - shelf->amount;
-      destroy_first_shelf(locs, shelf);
       amount -= shelf->amount;
+      linked_list_append(linked_list, ptr_elem(shelf->shelf_name));
+      //destroy_first_shelf(locs);
+      shelf = shelf->next;
     }
   }
+  if (linked_list_is_empty(linked_list)) {
+    linked_list_destroy(linked_list);
+    return NULL;
+  }
+  return linked_list;
 }
 
 shelf_list_t *shelf_list_create() {

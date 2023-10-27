@@ -130,8 +130,3 @@ int decrease_total_amount(merch_t *merch_to_change, int decreasing_amount) {
         return merch_to_change->amount;
     }
 }
-
-
-shelf_list_t *get_shelf_list(merch_t *merch) {
-    return merch->locs;
-}
