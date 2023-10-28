@@ -70,6 +70,29 @@ void cart_append(cart_t *cart, char *name, int amount, int price) {
 }
 
 bool cart_remove_order_with_merch(cart_t *cart, char* merch_name) {
+    bool success = false;
+    order_t *previous = cart->first;
+    if (previous == NULL) { return false; }
+    if (strcmp(previous->merch_name, merch_name) == 0) {
+        cart->first = previous->next;
+        order_destroy(previous);
+        success = true;
+    }
+    //TODO: While går inte vidare i listan, tuggar på samma ställe om inte första if är sant på rad 83
+    order_t *current = previous->next;
+    while (current != NULL) {
+        if (strcmp(current->merch_name, merch_name) == 0) {
+            previous->next = current->next;
+            order_destroy(current);
+            success = true;
+        } else {
+            current = current->next;
+        }
+    }
+    return success;
+}
+
+bool cart_remove_single_order_with_merch(cart_t *cart, char* merch_name) {
     order_t *previous = cart->first;
     if (previous == NULL) { return false; }
     if (strcmp(previous->merch_name, merch_name) == 0) {
@@ -77,12 +100,15 @@ bool cart_remove_order_with_merch(cart_t *cart, char* merch_name) {
         order_destroy(previous);
         return true;
     }
+    //TODO: While går inte vidare i listan, tuggar på samma ställe om inte första if är sant på rad 83
     order_t *current = previous->next;
     while (current != NULL) {
         if (strcmp(current->merch_name, merch_name) == 0) {
             previous->next = current->next;
             order_destroy(current);
             return true;
+        } else {
+            current = current->next;
         }
     }
     return false;
@@ -185,13 +211,45 @@ int cart_hash_table_order_amount_for_merch(cart_hash_table_t *ht, char *merch_na
     return amount;
 }
 
+int single_cart_order_amount_of_merch(cart_t *cart, char *merch_name) {
+    order_t *order = cart->first;
+    int amount = 0;
+    while (order != NULL) {
+        if (strcmp(order->merch_name, merch_name) == 0) {
+            amount += order->amount;
+        }
+        order = order->next;
+    }
+    return amount;
+}
+
+
+void remove_amount_of_items(cart_t *cart, char *merch_name, int amount) {
+    order_t *order = cart->first;
+    while (amount != 0) {
+        if (strcmp(order->merch_name, merch_name) == 0) {
+            if (order->amount > amount) {
+                order->amount = order->amount - amount;
+                amount = 0;
+            } else {
+                amount -= order->amount;
+                order = order->next;
+                cart_remove_single_order_with_merch(cart, merch_name);
+            }
+        } else {
+            order = order->next;
+        }
+    }
+}
+
 void carts_hash_table_remove_orders(cart_hash_table_t *ht, char *merch_name) {
     list_t *ls = hash_table_values(ht);
     list_iterator_t *iter = list_iterator(ls);
 
     while (iterator_has_next(iter)) {
         cart_t *cart = iterator_next(iter).ptr_value;
-        while (cart_remove_order_with_merch(cart, merch_name));
+
+        cart_remove_order_with_merch(cart, merch_name);
     }
     iterator_destroy(iter);
     linked_list_destroy(ls);

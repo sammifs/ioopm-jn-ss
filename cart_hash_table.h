@@ -26,6 +26,10 @@ void cart_list_checkout();
 
 int cart_hash_table_order_amount_for_merch(cart_hash_table_t *ht, char *merch_name);
 
+int single_cart_order_amount_of_merch(cart_t *cart, char *merch_name);
+
+void remove_amount_of_items(cart_t *cart, char *merch_name, int amount);
+
 void carts_hash_table_remove_orders(cart_hash_table_t *ht, char *name);
 
 order_t *cart_get_first_order(cart_t *cart);

@@ -160,6 +160,22 @@ int main() {
                 printf("Order added successfully to cart!\n");
             }
         }
+        else if (choice == '-') {
+            int cart_index = ask_question_int("What index of the cart?: ");
+            char *merch_name = ask_question_string("What merch?: ");
+            int amount = ask_question_positive_int("How many?: ");
+            int result = ioopm_store_remove_from_cart(store, cart_index, merch_name, amount);
+            if (result == 0) {
+                printf("The remove was successful!\n");
+            } else if (result == -1) {
+                printf("No cart with that index!\n");
+            } else if (result == -2) {
+                printf("That merch was not found in that cart!\n");
+            } else {
+                printf("The amount you gave was greater than the items of that merch in your cart!\n");
+            }
+            free(merch_name);
+        }
         else if (choice == 'Q') {
             ioopm_store_destroy(store);
             loop = false;

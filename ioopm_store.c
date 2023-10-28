@@ -198,6 +198,7 @@ int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_na
                 return -1;
             }
         } else {
+            // Not a correct amount given
             return -3;
         }
     } else {
@@ -206,8 +207,26 @@ int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_na
     }
 }
 
-void ioopm_store_remove_from_cart(ioopm_store_t *store, int cart_index) {
-    // TODO : stub
+int ioopm_store_remove_from_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount) {
+    bool cart_found;
+    cart_t *cart = cart_hash_table_lookup(store->carts, cart_index, &cart_found);
+
+    if (cart_found) {
+        int existing_amount = single_cart_order_amount_of_merch(cart, merch_name);
+        if (existing_amount >= amount) {
+            remove_amount_of_items(cart, merch_name, amount);
+            return 0;
+        } else if (existing_amount < amount) {
+            // The given amount was greater than the existing amount, couldn't remove that many
+            return -3;
+        } else {
+            // Merch was not found in the given cart
+            return -2;
+        }
+    } else {
+        // Cart was not found
+        return -1;
+    }
 }
 
 int ioopm_store_calculate_cost_cart(ioopm_store_t *store, int cart_index, bool *success) {
@@ -238,7 +257,7 @@ void checkout(ioopm_store_t *store, cart_t *cart) {
                 hash_table_remove(store->shelves, ptr_elem(shelf_name), &success);
             }
             iterator_destroy(iter);
-            linked_list_remove(shelves_to_delete,0);
+            linked_list_remove(shelves_to_delete, 0);
 
             for (int i=0; i<linked_list_size(shelves_to_delete); i++) {
                 destroy_first_shelf(locs);
