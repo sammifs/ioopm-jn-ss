@@ -59,9 +59,8 @@ size_t linked_list_size(list_t *list);
 
 /// @brief Test whether a list is empty or not
 /// @param list the linked list
-/// @return true if the number of elements int the list is 0, else false
+/// @return true if the number of elements in the list is 0, else false
 bool linked_list_is_empty(list_t *list);
-
 
 /// @brief Remove an element from a linked list in O(n) time.
 /// The valid values of index are [0,n-1] for a list of n elements,
@@ -77,7 +76,6 @@ elem_t linked_list_remove(list_t *list, int index);
 /// @return true if element is in the list, else false
 bool linked_list_contains(list_t *list, elem_t element);
 
-
 /// @brief Retrieve an element from a linked list in O(n) time.
 /// The valid values of index are [0,n-1] for a list of n elements,
 /// where 0 means the first element and n-1 means the last element.
@@ -86,11 +84,9 @@ bool linked_list_contains(list_t *list, elem_t element);
 /// @return the value at the given position in an element struct
 elem_t linked_list_get(list_t *list, int index);
 
-
 /// @brief Remove all elements from a linked list
 /// @param list the linked list
 void linked_list_clear(list_t *list);
-
 
 /// @brief Test if a supplied property holds for all elements in a list.
 /// The function returns as soon as the return value can be determined.
@@ -114,8 +110,11 @@ bool linked_list_any(list_t *list, int_predicate prop, void *extra);
 /// @param extra an additional argument (may be NULL) that will be passed to all internal calls of fun
 void linked_list_apply_to_all(list_t *list, apply_int_function fun, void *extra);
 
-/// @brief Destroy link.
-/// @param link 
+/// @brief Destroys a given link and all links after
+/// @param link the link to be destroyed
 void links_destroy(link_t *link);
 
+/// @brief Gets the first link in a linked list
+/// @param list The list that the link will be taken from
+/// @return Returns the first link in a linked list
 link_t *linked_list_first(list_t *list);

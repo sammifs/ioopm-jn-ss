@@ -75,6 +75,3 @@ int cart_list_calculate_cost(cart_list_t *list) {
     }
 }
 
-void cart_list_checkout() {
-
-}

@@ -25,6 +25,8 @@ typedef struct entry entry_t;
 
 typedef int(*hash_function)(elem_t);
 
+typedef bool(*predicate_entry)(entry_t *entry, void *arg);
+
 elem_t entry_value(entry_t *entry);
 
 /// @brief Create a new hash table
@@ -107,8 +109,6 @@ bool hash_table_any(hash_table_t *ht, predicate pred, void *arg);
 /// @param arg extra argument to apply_fun
 void hash_table_apply_to_all(hash_table_t *ht, apply_function apply_fun, void *arg);
 
-typedef bool(*predicate_entry)(entry_t *entry, void *arg);
-
 /// @brief destroys all entires that pass the predicate.
 /// @param ht hash table operated upon
 /// @param pred_fun predicate function that entries need to pass
@@ -117,5 +117,6 @@ void hash_table_destroy_any_entries(hash_table_t *ht, predicate_entry pred_fun, 
 /// @brief Changes the value of all entries that the predicate function returns true on
 /// @param ht hash table operated upon
 /// @param pred_fun predicate function that entries need to pass
-/// @param old Argument of which will be 
+/// @param old One of the arguments in predicate function 
+/// @param new The value to the changed to if the predicate function is true
 void hash_table_change_all(hash_table_t *ht, predicate_entry pred_fun, void *old, void *new);
