@@ -38,6 +38,14 @@ void ioopm_store_destroy(ioopm_store_t *store) {
     free(store);
 }
 
+merch_hash_table_t *store_get_warehouse(ioopm_store_t *store) {
+    return store->warehouse;
+}
+
+hash_table_t *store_get_shelves(ioopm_store_t *store) {
+    return store->shelves;
+}
+
 bool ioopm_store_has_merch(ioopm_store_t *store, char*name) {
     return merch_hash_table_has_key(store->warehouse, name);
 }
@@ -74,13 +82,13 @@ void ioopm_store_list_merch(ioopm_store_t *store) {
     free(merch_names);
 }
 
-bool is_merch_pred_fun(entry_t *entry, void *name) {
+bool is_correct_merch_pred_fun(entry_t *entry, void *name) {
     if (compare_str(entry_value(entry), str_elem(name))) { return true; }
     else return false;
 }
 
 void delete_merch_from_shelves_ht(ioopm_store_t *store, char *name) {
-    hash_table_destroy_any_entries(store->shelves, is_merch_pred_fun, name);
+    hash_table_destroy_any_entries(store->shelves, is_correct_merch_pred_fun, name);
 }
 
 bool ioopm_store_delete_merch(ioopm_store_t *store, char *name) {
@@ -90,7 +98,7 @@ bool ioopm_store_delete_merch(ioopm_store_t *store, char *name) {
 }
 
 void change_merch_in_shelf(ioopm_store_t *store, char *old_name, char *new_name) {
-    hash_table_change_all(store->shelves, is_merch_pred_fun, old_name, new_name);
+    hash_table_change_all(store->shelves, is_correct_merch_pred_fun, old_name, new_name);
 }
 
 void merch_changer(merch_t *merch, char *old_name, char *desc, int price) {
@@ -264,12 +272,12 @@ int ioopm_store_remove_from_cart(ioopm_store_t *store, int cart_index, char *mer
         if (existing_amount >= amount) {
             remove_amount_of_items(cart, merch_name, amount);
             return 0;
-        } else if (existing_amount < amount) {
-            // The given amount was greater than the existing amount, couldn't remove that many
-            return -3;
-        } else {
+        } else if (existing_amount == 0) {
             // Merch was not found in the given cart
             return -2;
+        } else {
+            // The given amount was greater than the existing amount, couldn't remove that many
+            return -3;
         }
     } else {
         // Cart was not found

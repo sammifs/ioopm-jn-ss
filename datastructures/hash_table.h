@@ -114,4 +114,8 @@ typedef bool(*predicate_entry)(entry_t *entry, void *arg);
 /// @param pred_fun predicate function that entries need to pass
 void hash_table_destroy_any_entries(hash_table_t *ht, predicate_entry pred_fun, void *arg);
 
-void hash_table_change_all(hash_table_t *ht, predicate_entry pref_fun, void *old, void *new);
+/// @brief Changes the value of all entries that the predicate function returns true on
+/// @param ht hash table operated upon
+/// @param pred_fun predicate function that entries need to pass
+/// @param old Argument of which will be 
+void hash_table_change_all(hash_table_t *ht, predicate_entry pred_fun, void *old, void *new);
