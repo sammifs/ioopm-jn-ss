@@ -14,7 +14,21 @@ event_loop: event_loop.c
 build_store_test: ioopm_store_test.c
 	$(CC) $(FLAGS) $^ $(INLUPP2) -lcunit -o $@
 
-clean:
-	rm -f event_loop build_store_test
+mem_store_test: 
+	make build_store_test
+	$(MEM) ./build_store_test
 
-.PHONY: event_loop build_store_test
+gcov_store:	ioopm_store.o
+	$(CC) $(GCOVFLAGS) $(FLAGS) -o ioopm_store $(INLUPP2) ioopm_store_test.c -lcunit
+	./ioopm_store
+	gcov ioopm_store.c
+
+
+clean:
+	rm -f *.o
+	rm -f *.gcov
+	rm -f *.gcda
+	rm -f *.gcno
+	rm -f event_loop build_store_test ioopm_store
+
+.PHONY: event_loop build_store_test gcov_store

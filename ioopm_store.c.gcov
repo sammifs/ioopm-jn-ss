@@ -1,0 +1,335 @@
+        -:    0:Source:ioopm_store.c
+        -:    0:Graph:ioopm_store.gcno
+        -:    0:Data:ioopm_store.gcda
+        -:    0:Runs:1
+        -:    1:#include "ioopm_store.h"
+        -:    2:
+        -:    3:struct store {
+        -:    4:    merch_hash_table_t *warehouse;
+        -:    5:
+        -:    6:    // hash table mapping shelf name i.e "A34" to merch name i.e "Ost". Used to
+        -:    7:    // avoid mixing merch on shelf.
+        -:    8:    hash_table_t *shelves;
+        -:    9:
+        -:   10:    int cart_index;
+        -:   11:    cart_hash_table_t *carts;
+        -:   12:};
+        -:   13:
+       11:   14:ioopm_store_t *ioopm_store_create() {
+       11:   15:    ioopm_store_t *store = calloc(1, sizeof(ioopm_store_t));
+        -:   16:
+       11:   17:    store->warehouse = merch_hash_table_create();
+        -:   18:
+        -:   19:    // shelves is so basic that it can be a generic hash table.
+        -:   20:    // It's created with hash function string->int and key comparison str<->str.
+        -:   21:    // value equality is never checked so its NULL.
+       11:   22:    store->shelves = hash_table_create(string_to_int, compare_str, NULL);
+        -:   23:
+       11:   24:    store->cart_index = 0;
+       11:   25:    store->carts = cart_hash_table_create();
+       11:   26:    return store;
+        -:   27:}
+        -:   28:
+       11:   29:void ioopm_store_destroy(ioopm_store_t *store) {
+       11:   30:    merch_hash_table_destroy(store->warehouse);
+       11:   31:    cart_hash_table_destroy(store->carts);
+        -:   32:
+        -:   33:    // store->shelves is not responsible for any of the strdups it carries.
+        -:   34:    // Thats why we can do a simple hash_table_destroy on it.
+        -:   35:    // shelf_names are destroyed when shelf_list is destroyed, and merch_names are
+        -:   36:    // destroyed when when merch_hash_table is destroyed.
+       11:   37:    hash_table_destroy(store->shelves);
+       11:   38:    free(store);
+       11:   39:}
+        -:   40:
+        8:   41:bool ioopm_store_has_merch(ioopm_store_t *store, char*name) {
+        8:   42:    return merch_hash_table_has_key(store->warehouse, name);
+        -:   43:}
+        -:   44:// TODO: Handle empty string as name
+       15:   45:bool ioopm_store_add_merch(ioopm_store_t *store, char *name, char *desc, int price) {
+       15:   46:    return merch_hash_table_insert(store->warehouse, name, desc, price);
+        -:   47:}
+        -:   48:
+    #####:   49:void ioopm_store_list_merch(ioopm_store_t *store) {
+    #####:   50:    char **merch_names = merch_hash_table_keys(store->warehouse);
+    #####:   51:    int size = merch_hash_table_size(store->warehouse);
+    #####:   52:    qsort(merch_names, size, sizeof(char *), cmpstringp);
+        -:   53:
+    #####:   54:    int batch_size = 20;
+    #####:   55:    int current_i = 0;
+        -:   56:
+    #####:   57:    while (current_i < size) {
+        -:   58:
+    #####:   59:        for (int i=current_i; i < current_i + batch_size && i < size; i++) {
+    #####:   60:            printf("%s\n", merch_names[i]);
+        -:   61:        }
+        -:   62:
+    #####:   63:        if (current_i + batch_size < size) {
+    #####:   64:            char choice = toupper(ask_question_char(("Continue printing? (Y for yes): ")));
+        -:   65:
+    #####:   66:            if (choice != 'Y') {
+    #####:   67:                break;
+        -:   68:            }
+        -:   69:        }
+    #####:   70:        else { break; }
+        -:   71:
+    #####:   72:        current_i += batch_size;
+        -:   73:    }
+    #####:   74:    free(merch_names);
+    #####:   75:}
+        -:   76:
+        1:   77:bool is_merch_pred_fun(entry_t *entry, void *name) {
+        1:   78:    if (compare_str(entry_value(entry), str_elem(name))) { return true; }
+    #####:   79:    else return false;
+        -:   80:}
+        -:   81:
+        5:   82:void delete_merch_from_shelves_ht(ioopm_store_t *store, char *name) {
+        5:   83:    hash_table_destroy_any_entries(store->shelves, is_merch_pred_fun, name);
+        5:   84:}
+        -:   85:
+        5:   86:bool ioopm_store_delete_merch(ioopm_store_t *store, char *name) {
+        5:   87:    delete_merch_from_shelves_ht(store, name);
+        5:   88:    carts_hash_table_remove_orders(store->carts, name);
+        5:   89:    return merch_hash_table_remove(store->warehouse, name);
+        -:   90:}
+        -:   91:
+        1:   92:void change_merch_in_shelf(ioopm_store_t *store, char *old_name, char *new_name) {
+        1:   93:    hash_table_change_all(store->shelves, is_merch_pred_fun, old_name, new_name);
+        1:   94:}
+        -:   95:
+    #####:   96:void merch_changer(merch_t *merch, char *old_name, char *desc, int price) {
+    #####:   97:    merch_change_desc(merch, desc);
+    #####:   98:    merch_change_price(merch, price);
+    #####:   99:}
+        -:  100:
+        -:  101:
+        3:  102:int ioopm_store_edit_merch(ioopm_store_t *store, char *old_name, char *new_name, char *desc, int price) {
+        -:  103:    bool merch_found;
+        3:  104:    merch_t *merch = merch_hash_table_lookup(store->warehouse, old_name, &merch_found);
+        -:  105:
+        3:  106:    if (merch_found) {
+        2:  107:        if (strcmp(old_name, new_name) == 0) {
+    #####:  108:            merch_changer(merch, old_name, desc, price);
+    #####:  109:            carts_hash_table_change_orders(store->carts, old_name, new_name, price); 
+    #####:  110:            return 1;
+        2:  111:        } else if (ioopm_store_has_merch(store, new_name)) {
+        -:  112:            // We are trying to edit the name into an already existing name, not allowed.
+        -:  113:            // Return error code -2
+        1:  114:            return -2;
+        -:  115:        }
+        -:  116:        else {
+        -:  117:            // Get amount to insert later into the new merch
+        1:  118:            int amount = merch_get_amount(merch);
+        -:  119:
+        -:  120:            // Duplicate locs list which else is freed in delete_merch
+        1:  121:            shelf_list_t *duplicated_locs = dup_shelf_list(merch_get_locs(merch));
+        -:  122:
+        -:  123:            // Changes all relavent orders to the new name and price
+        1:  124:            carts_hash_table_change_orders(store->carts, old_name, new_name, price);
+        -:  125:
+        -:  126:            // Changes all relavent shelves to the new name
+        1:  127:            change_merch_in_shelf(store, old_name, new_name);
+        -:  128:
+        -:  129:            // Deletes the old merch
+        1:  130:            ioopm_store_delete_merch(store, old_name);
+        -:  131:
+        -:  132:            // Creates a new with the new name, desc and price
+        1:  133:            ioopm_store_add_merch(store, new_name, desc, price);
+        -:  134:
+        -:  135:            // Get the newly made merch
+        1:  136:            merch = merch_hash_table_lookup(store->warehouse, new_name, &merch_found);
+        -:  137:
+        -:  138:            // Inserts all locations into the struct
+        1:  139:            merch_change_locs(merch, duplicated_locs);
+        -:  140:
+        -:  141:            // Insert the right amount
+        1:  142:            merch_increase_amount(merch, amount);
+        1:  143:            return 0;
+        -:  144:        }
+        -:  145:    }
+        -:  146:    else {
+        -:  147:        // Merch we are trying to edit was not found. Return error code -1.
+        1:  148:        return -1;
+        -:  149:    }
+        -:  150:}
+        -:  151:// TODO: Ändra så att det kollar igenom carts och subtraherar det
+    #####:  152:void ioopm_store_show_stock(ioopm_store_t *store, char *name) {
+        -:  153:    bool success;
+    #####:  154:    merch_t *merch = merch_hash_table_lookup(store->warehouse, name, &success);
+        -:  155:
+    #####:  156:    int existing_amount = merch_get_amount(merch);
+    #####:  157:    int amount_within_orders = cart_hash_table_order_amount_for_merch(store->carts, merch_get_name(merch));
+    #####:  158:    printf("Available amount: %d\n", existing_amount - amount_within_orders);
+    #####:  159:    shelf_list_print_name_amount(merch_get_locs(merch));
+    #####:  160:}
+        -:  161:
+        8:  162:int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *shelf_name, int amount) {
+        -:  163:    bool merch_found;
+        8:  164:    merch_t *merch = merch_hash_table_lookup(store->warehouse, merch_name, &merch_found);
+        -:  165:
+        8:  166:    if (merch_found) {
+        -:  167:        bool shelf_found;
+        6:  168:        elem_t merch_of_found_shelf = hash_table_lookup(store->shelves, str_elem(shelf_name), &shelf_found);
+        6:  169:        if (shelf_found && compare_str(merch_of_found_shelf, str_elem(merch_name))) {
+        -:  170:            // This means we found the shelf and it belongs to the merch we want to replenish. Score!
+        -:  171:            // Now we find it in merch->locs and increase amount. Return 1 to indicate success.
+        1:  172:            shelf_t *shelf = shelf_list_get_shelf(merch_get_locs(merch), shelf_name);
+        1:  173:            shelf_increase_amount(shelf, amount);
+        1:  174:            merch_increase_amount(merch, amount);
+        -:  175:
+        1:  176:            return 1;
+        -:  177:        }
+        5:  178:        else if (shelf_found) {
+        -:  179:            // We found the shelf but it did not belong to our merch. Mixing on shelves is not 
+        -:  180:            // allowed. Return error code -2.
+        -:  181:
+        1:  182:            return -2;
+        -:  183:        }
+        -:  184:        else {
+        -:  185:            // Shelf wasnt found, this means it is free to claim for our merch! Create a new shelf
+        -:  186:            // and place it in merch->locs. Then create an entry to the shelves hash table.
+        -:  187:            // Return 0 to indicate success.
+        4:  188:            shelf_list_append(merch_get_locs(merch), shelf_name, amount);
+        4:  189:            merch_increase_amount(merch, amount);
+        -:  190:
+        -:  191:            // VERY IMPORTANT to get the merch name pointer from merch_t *merch instead of from 
+        -:  192:            // merch_name. Now we can free merch_name in event_loop however we want 
+        -:  193:            // and the shelves hashtable is free from responsiblity.
+        4:  194:            hash_table_insert(store->shelves, str_elem(shelf_name), str_elem(merch_get_name(merch)));
+        4:  195:            return 0;
+        -:  196:        }
+        -:  197:    }
+        -:  198:    else {
+        -:  199:        // Merch wasnt found. Return error code -1.
+        2:  200:        return -1;
+        -:  201:    }
+        -:  202:}
+        -:  203:
+    #####:  204:void ioopm_store_create_cart(ioopm_store_t *store) {
+    #####:  205:    store->cart_index++;
+    #####:  206:    cart_hash_table_insert(store->carts, store->cart_index);
+    #####:  207:}
+        -:  208:
+    #####:  209:int ioopm_store_get_cart_index(ioopm_store_t *store) {
+    #####:  210:    return store->cart_index;
+        -:  211:}
+        -:  212:
+    #####:  213:bool ioopm_store_has_cart(ioopm_store_t *store, int cart_index) {
+        -:  214:    bool success;
+    #####:  215:    cart_hash_table_lookup(store->carts, cart_index, &success);
+    #####:  216:    return success;
+        -:  217:}
+        -:  218:
+        -:  219://TODO: Lägg till "free" för de strdup:ade namnen
+    #####:  220:bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index) {
+    #####:  221:    return cart_hash_table_remove(store->carts, cart_index);
+        -:  222:}
+        -:  223:
+    #####:  224:bool amount_exists(cart_hash_table_t *carts, merch_t *merch, int amount) {
+    #####:  225:    int existing_amount = merch_get_amount(merch);
+    #####:  226:    int amount_within_orders = cart_hash_table_order_amount_for_merch(carts, merch_get_name(merch));
+    #####:  227:    if (amount + amount_within_orders <= existing_amount) {
+    #####:  228:        return true;
+        -:  229:    } else {
+    #####:  230:        return false;
+        -:  231:    }
+        -:  232:}
+        -:  233:
+        -:  234:// strdup merch_name
+    #####:  235:int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount) {
+        -:  236:    bool merch_found;
+    #####:  237:    merch_t *merch = merch_hash_table_lookup(store->warehouse, merch_name, &merch_found);
+        -:  238:
+    #####:  239:    if (merch_found) {
+    #####:  240:        if (amount_exists(store->carts, merch, amount)) {
+    #####:  241:            if (cart_hash_table_append_order(store->carts, cart_index, merch_name, amount, merch_get_price(merch))) {
+        -:  242:                // Everything worked. Return 0.
+    #####:  243:                return 0;
+        -:  244:            } else {
+        -:  245:                // Cart not found. Return error code -1.
+    #####:  246:                return -1;
+        -:  247:            }
+        -:  248:        } else {
+        -:  249:            // Not a correct amount given
+    #####:  250:            return -3;
+        -:  251:        }
+        -:  252:    } else {
+        -:  253:        // Merch not found. Return error code -2.
+    #####:  254:        return -2;
+        -:  255:    }
+        -:  256:}
+        -:  257:
+    #####:  258:int ioopm_store_remove_from_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount) {
+        -:  259:    bool cart_found;
+    #####:  260:    cart_t *cart = cart_hash_table_lookup(store->carts, cart_index, &cart_found);
+        -:  261:
+    #####:  262:    if (cart_found) {
+    #####:  263:        int existing_amount = single_cart_order_amount_of_merch(cart, merch_name);
+    #####:  264:        if (existing_amount >= amount) {
+    #####:  265:            remove_amount_of_items(cart, merch_name, amount);
+    #####:  266:            return 0;
+    #####:  267:        } else if (existing_amount < amount) {
+        -:  268:            // The given amount was greater than the existing amount, couldn't remove that many
+    #####:  269:            return -3;
+        -:  270:        } else {
+        -:  271:            // Merch was not found in the given cart
+    #####:  272:            return -2;
+        -:  273:        }
+        -:  274:    } else {
+        -:  275:        // Cart was not found
+    #####:  276:        return -1;
+        -:  277:    }
+        -:  278:}
+        -:  279:
+    #####:  280:int ioopm_store_calculate_cost_cart(ioopm_store_t *store, int cart_index, bool *success) {
+    #####:  281:    return cart_hash_table_calculate_cost(store->carts, cart_index, success);
+        -:  282:}
+        -:  283:
+    #####:  284:void checkout(ioopm_store_t *store, cart_t *cart) {
+    #####:  285:    order_t *order = cart_get_first_order(cart);
+        -:  286:
+    #####:  287:    while (order != NULL) {
+    #####:  288:        int amount = order_get_amount(order);
+    #####:  289:        char *item = order_get_merch(order);
+        -:  290:        bool merch_found;
+        -:  291:
+    #####:  292:        merch_t *merch_to_change = merch_hash_table_lookup(store->warehouse, item, &merch_found);
+    #####:  293:        shelf_list_t *locs = merch_get_locs(merch_to_change);
+        -:  294:
+    #####:  295:        decrease_total_amount(merch_to_change, amount);
+    #####:  296:        list_t *shelves_to_delete = shelf_decrease_amount(locs, amount);
+        -:  297:
+    #####:  298:        if (shelves_to_delete != NULL) {
+    #####:  299:            list_iterator_t *iter = list_iterator(shelves_to_delete);
+        -:  300:
+    #####:  301:            while (iterator_has_next(iter)) {
+    #####:  302:                char *shelf_name = iterator_next(iter).ptr_value;
+        -:  303:
+        -:  304:                bool success;
+    #####:  305:                hash_table_remove(store->shelves, ptr_elem(shelf_name), &success);
+        -:  306:            }
+    #####:  307:            iterator_destroy(iter);
+    #####:  308:            linked_list_remove(shelves_to_delete, 0);
+        -:  309:
+    #####:  310:            for (int i=0; i<linked_list_size(shelves_to_delete); i++) {
+    #####:  311:                destroy_first_shelf(locs);
+        -:  312:            }
+    #####:  313:            linked_list_destroy(shelves_to_delete);
+        -:  314:        }
+        -:  315:        
+    #####:  316:        order = cart_get_next_order(order);
+        -:  317:    }
+    #####:  318:}
+        -:  319:
+    #####:  320:bool ioopm_store_checkout_cart(ioopm_store_t *store, int cart_index) {
+        -:  321:    bool cart_found;
+    #####:  322:    cart_t *cart = cart_hash_table_lookup(store->carts, cart_index, &cart_found);
+    #####:  323:    if (cart_found) {
+    #####:  324:        checkout(store, cart);
+        -:  325:        // Remove the cart that has been checked out
+    #####:  326:        cart_hash_table_remove(store->carts, cart_index);
+    #####:  327:        return true;
+        -:  328:    } else {
+    #####:  329:        return false;
+        -:  330:    }
+        -:  331:}
