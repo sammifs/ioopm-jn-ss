@@ -70,12 +70,14 @@ int main() {
                 char *new_desc = ask_question_string("What is the new description?:  ");
                 int new_price = ask_question_positive_int("What is the new price?: ");
 
-                choice = ask_question_char("Are you sure you want to edit merch? (Y for yes): ");
-
-                if (choice == 'Y' && (0 == ioopm_store_edit_merch(store, name, new_name, new_desc, new_price))) {
+                choice = toupper(ask_question_char("Are you sure you want to edit merch? (Y for yes): "));
+                int result = ioopm_store_edit_merch(store, name, new_name, new_desc, new_price);
+                if (choice == 'Y' && (result == 0)) {
                     printf("Merch was successfully edited!\n");
-                }
-                else {
+                } else if (choice == 'Y' && (result == 1)) {
+                    printf("The description and price got changed!\n");
+                    free(new_name);
+                } else {
                     printf("Merch was NOT edited. Either you said no or the new merch name is already occupied!\n");
                     free(new_name);
                     free(new_desc);

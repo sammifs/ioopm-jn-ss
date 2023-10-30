@@ -16,6 +16,12 @@ int merch_get_amount(merch_t *merch);
 
 int merch_get_price(merch_t *merch);
 
+void merch_change_desc(merch_t *merch, char *desc);
+
+void merch_change_price(merch_t *merch, int price);
+
+void merch_change_locs(merch_t *merch, shelf_list_t *locs);
+
 void merch_increase_amount(merch_t *merch, int amount);
 
 merch_hash_table_t *merch_hash_table_create();

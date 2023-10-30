@@ -37,6 +37,27 @@ char *shelf_get_shelf_name(shelf_t *shelf) {
   return shelf->shelf_name;
 }
 
+char *shelf_get_merch_name(shelf_t *shelf) {
+  return shelf->merch_name;
+}
+
+int shelf_get_amount(shelf_t *shelf) {
+  return shelf->amount;
+}
+
+shelf_list_t *dup_shelf_list(shelf_list_t *old_list) {
+  shelf_t *shelf = old_list->first;
+  shelf_list_t *new_list = shelf_list_create();
+
+  while(shelf != NULL) {
+    char *tmp = shelf->shelf_name;
+    char *name = strdup(tmp);
+    shelf_list_append(new_list, name, shelf->amount);
+    shelf = shelf->next;
+  }
+  return new_list;
+}
+
 void shelf_destroy(shelf_t *shelf) {
   // shelf_t IS RESPONSBILE for shelf_name and WILL destroy it.
   free(shelf->shelf_name);

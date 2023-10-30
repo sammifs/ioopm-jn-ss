@@ -48,6 +48,20 @@ int merch_get_price(merch_t *merch) {
     return merch->price;
 }
 
+void merch_change_desc(merch_t *merch, char *desc) {
+    free(merch->desc);
+    merch->desc = desc;
+}
+
+void merch_change_price(merch_t *merch, int price) {
+    merch->price = price;
+}
+
+void merch_change_locs(merch_t *merch, shelf_list_t *locs) {
+    shelf_list_destroy(merch->locs);
+    merch->locs = locs;
+}
+
 void merch_increase_amount(merch_t *merch, int amount) {
     merch->amount += amount;
 }

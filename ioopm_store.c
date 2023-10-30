@@ -74,29 +74,72 @@ void ioopm_store_list_merch(ioopm_store_t *store) {
     free(merch_names);
 }
 
-bool delete_merch_from_shelves_pred_fun(entry_t *entry, void *name) {
+bool is_merch_pred_fun(entry_t *entry, void *name) {
     if (compare_str(entry_value(entry), str_elem(name))) { return true; }
     else return false;
 }
+
 void delete_merch_from_shelves_ht(ioopm_store_t *store, char *name) {
-    hash_table_destroy_any_entries(store->shelves, delete_merch_from_shelves_pred_fun, name);
+    hash_table_destroy_any_entries(store->shelves, is_merch_pred_fun, name);
 }
+
 bool ioopm_store_delete_merch(ioopm_store_t *store, char *name) {
     delete_merch_from_shelves_ht(store, name);
     carts_hash_table_remove_orders(store->carts, name);
     return merch_hash_table_remove(store->warehouse, name);
 }
 
-int ioopm_store_edit_merch(ioopm_store_t *store, char *old_name, char *name, char *desc, int price) {
-    if (ioopm_store_has_merch(store, old_name)) {
-        if (ioopm_store_has_merch(store, name)) {
+void change_merch_in_shelf(ioopm_store_t *store, char *old_name, char *new_name) {
+    hash_table_change_all(store->shelves, is_merch_pred_fun, old_name, new_name);
+}
+
+void merch_changer(merch_t *merch, char *old_name, char *desc, int price) {
+    merch_change_desc(merch, desc);
+    merch_change_price(merch, price);
+}
+
+
+int ioopm_store_edit_merch(ioopm_store_t *store, char *old_name, char *new_name, char *desc, int price) {
+    bool merch_found;
+    merch_t *merch = merch_hash_table_lookup(store->warehouse, old_name, &merch_found);
+
+    if (merch_found) {
+        if (strcmp(old_name, new_name) == 0) {
+            merch_changer(merch, old_name, desc, price);
+            carts_hash_table_change_orders(store->carts, old_name, new_name, price); 
+            return 1;
+        } else if (ioopm_store_has_merch(store, new_name)) {
             // We are trying to edit the name into an already existing name, not allowed.
             // Return error code -2
             return -2;
         }
         else {
+            // Get amount to insert later into the new merch
+            int amount = merch_get_amount(merch);
+
+            // Duplicate locs list which else is freed in delete_merch
+            shelf_list_t *duplicated_locs = dup_shelf_list(merch_get_locs(merch));
+
+            // Changes all relavent orders to the new name and price
+            carts_hash_table_change_orders(store->carts, old_name, new_name, price);
+
+            // Changes all relavent shelves to the new name
+            change_merch_in_shelf(store, old_name, new_name);
+
+            // Deletes the old merch
             ioopm_store_delete_merch(store, old_name);
-            ioopm_store_add_merch(store, name, desc, price);
+
+            // Creates a new with the new name, desc and price
+            ioopm_store_add_merch(store, new_name, desc, price);
+
+            // Get the newly made merch
+            merch = merch_hash_table_lookup(store->warehouse, new_name, &merch_found);
+
+            // Inserts all locations into the struct
+            merch_change_locs(merch, duplicated_locs);
+
+            // Insert the right amount
+            merch_increase_amount(merch, amount);
             return 0;
         }
     }
@@ -105,10 +148,15 @@ int ioopm_store_edit_merch(ioopm_store_t *store, char *old_name, char *name, cha
         return -1;
     }
 }
-
+// TODO: Ändra så att det kollar igenom carts och subtraherar det
 void ioopm_store_show_stock(ioopm_store_t *store, char *name) {
     bool success;
-    shelf_list_print_name_amount(merch_get_locs(merch_hash_table_lookup(store->warehouse, name, &success)));
+    merch_t *merch = merch_hash_table_lookup(store->warehouse, name, &success);
+
+    int existing_amount = merch_get_amount(merch);
+    int amount_within_orders = cart_hash_table_order_amount_for_merch(store->carts, merch_get_name(merch));
+    printf("Available amount: %d\n", existing_amount - amount_within_orders);
+    shelf_list_print_name_amount(merch_get_locs(merch));
 }
 
 int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *shelf_name, int amount) {

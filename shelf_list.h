@@ -9,6 +9,8 @@ typedef struct shelf shelf_t;
 
 char *shelf_get_shelf_name(shelf_t *shelf);
 
+shelf_list_t *dup_shelf_list(shelf_list_t *old_list);
+
 void shelf_increase_amount(shelf_t *shelf, int amount);
 
 list_t *shelf_decrease_amount(shelf_list_t *locs, int amount);

@@ -90,6 +90,24 @@ bool cart_remove_order_with_merch(cart_t *cart, char* merch_name) {
     return false;
 }
 
+bool cart_change_order_with_merch(cart_t *cart, char* old_name, char *new_name, int price) {
+    order_t *current = cart->first;
+    if (current == NULL) { return false; }
+    while (current != NULL) {
+        if (strcmp(current->merch_name, old_name) == 0) {
+            if (strcmp(old_name, new_name) != 0) {
+                free(current->merch_name);
+                current->merch_name = new_name;
+            }
+            current->price = price;
+            return true;
+        } else {
+            current = current->next;
+        }
+    }
+    return false;
+}
+
 int cart_calculate_cost(cart_t *cart) {
     int cost = 0;
     order_t *order = cart->first;
@@ -226,6 +244,19 @@ void carts_hash_table_remove_orders(cart_hash_table_t *ht, char *merch_name) {
         cart_t *cart = iterator_next(iter).ptr_value;
 
         while(cart_remove_order_with_merch(cart, merch_name));
+    }
+    iterator_destroy(iter);
+    linked_list_destroy(ls);
+}
+
+void carts_hash_table_change_orders(cart_hash_table_t *ht, char *old_name, char *new_name, int price) {
+    list_t *ls = hash_table_values(ht);
+    list_iterator_t *iter = list_iterator(ls);
+
+    while (iterator_has_next(iter)) {
+        cart_t *cart = iterator_next(iter).ptr_value;
+
+        cart_change_order_with_merch(cart, old_name, strdup(new_name), price);
     }
     iterator_destroy(iter);
     linked_list_destroy(ls);

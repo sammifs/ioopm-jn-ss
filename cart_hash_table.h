@@ -32,6 +32,8 @@ void remove_amount_of_items(cart_t *cart, char *merch_name, int amount);
 
 void carts_hash_table_remove_orders(cart_hash_table_t *ht, char *name);
 
+void carts_hash_table_change_orders(cart_hash_table_t *ht, char *old_name, char *new_name, int price);
+
 order_t *cart_get_first_order(cart_t *cart);
 
 order_t *cart_get_next_order(order_t *order);
