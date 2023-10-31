@@ -16,7 +16,9 @@ cart_hash_table_t *cart_hash_table_create();
 /// @param ht a hash table to be deleted
 void cart_hash_table_destroy(cart_hash_table_t *ht);
 
-/// @brief adds a new cart to the hash table
+/// @brief adds a new cart to the hash table. We never check for collision of two
+/// cart which means that the user must handle the cart_index to never insert an
+/// already existing one.
 /// @param ht hash table operated upon
 /// @param cart_index key to insert
 void cart_hash_table_insert(cart_hash_table_t *ht, int cart_index);

@@ -20,7 +20,6 @@ order_t *order_create(char *name, int amount, int price, order_t *next) {
 }
 
 void order_destroy(order_t *order) {
-    // TODO : Should order_t be responsible for order->merch_name??
     free(order->merch_name);
     free(order);
 }
@@ -128,12 +127,10 @@ cart_hash_table_t *cart_hash_table_create() {
 }
 
 void cart_hash_table_destroy(cart_hash_table_t *ht) {
-    // TODO : Tänk över ägarskap för strdups inuti.
     hash_table_apply_to_all(ht, cart_destroy, NULL);
     hash_table_destroy(ht);
 }
 
-// TODO : Tänk över detta, se om det stämmer.
 // We should never have to check for collisons due to
 // the overarching structure in ioopm_store_t, two carts
 // CANNOT have the same name.

@@ -49,7 +49,7 @@ hash_table_t *store_get_shelves(ioopm_store_t *store) {
 bool ioopm_store_has_merch(ioopm_store_t *store, char*name) {
     return merch_hash_table_has_key(store->warehouse, name);
 }
-// TODO: Handle empty string as name
+
 bool ioopm_store_add_merch(ioopm_store_t *store, char *name, char *desc, int price) {
     return merch_hash_table_insert(store->warehouse, name, desc, price);
 }
@@ -156,20 +156,28 @@ int ioopm_store_edit_merch(ioopm_store_t *store, char *old_name, char *new_name,
         return -1;
     }
 }
-// TODO: Ändra så att det kollar igenom carts och subtraherar det
-void ioopm_store_show_stock(ioopm_store_t *store, char *name) {
+
+bool ioopm_store_show_stock(ioopm_store_t *store, char *name) {
     bool success;
     merch_t *merch = merch_hash_table_lookup(store->warehouse, name, &success);
 
-    int existing_amount = merch_get_amount(merch);
-    int amount_within_orders = cart_hash_table_order_amount_for_merch(store->carts, merch_get_name(merch));
-    printf("Available amount: %d\n", existing_amount - amount_within_orders);
-    shelf_list_print_name_amount(merch_get_locs(merch));
+    if (success) {
+        int existing_amount = merch_get_amount(merch);
+        int amount_within_orders = cart_hash_table_order_amount_for_merch(store->carts, merch_get_name(merch));
+        printf("Available amount: %d\n", existing_amount - amount_within_orders);
+        shelf_list_print_name_amount(merch_get_locs(merch));
+        return true;
+    } else {
+        return false;
+    }
 }
 
 int ioopm_store_replenish_stock(ioopm_store_t *store, char *merch_name, char *shelf_name, int amount) {
     bool merch_found;
     merch_t *merch = merch_hash_table_lookup(store->warehouse, merch_name, &merch_found);
+
+    // Amount has to be positive integer. Return -3 if not.
+    if (amount < 1) { return -3; }
 
     if (merch_found) {
         bool shelf_found;
@@ -224,7 +232,6 @@ bool ioopm_store_has_cart(ioopm_store_t *store, int cart_index) {
     return success;
 }
 
-//TODO: Lägg till "free" för de strdup:ade namnen
 bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index) {
     return cart_hash_table_remove(store->carts, cart_index);
 }
@@ -243,6 +250,9 @@ bool amount_exists(cart_hash_table_t *carts, merch_t *merch, int amount) {
 int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount) {
     bool merch_found;
     merch_t *merch = merch_hash_table_lookup(store->warehouse, merch_name, &merch_found);
+
+    // Amount has to be positive integer. Return -4 if not.
+    if (amount < 1) { return -4; }
 
     if (merch_found) {
         if (amount_exists(store->carts, merch, amount)) {
@@ -266,6 +276,9 @@ int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_na
 int ioopm_store_remove_from_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount) {
     bool cart_found;
     cart_t *cart = cart_hash_table_lookup(store->carts, cart_index, &cart_found);
+
+    // Amount has to be positive integer. Return -4 if not.
+    if (amount < 1) { return -4; }
 
     if (cart_found) {
         int existing_amount = single_cart_order_amount_of_merch(cart, merch_name);

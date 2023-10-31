@@ -7,10 +7,6 @@ typedef struct shelf_list shelf_list_t;
 
 typedef struct shelf shelf_t;
 
-/// @brief Gets the name of the shelf
-/// @param shelf shelf operated upon
-/// @return the name of the shelf
-char *shelf_get_shelf_name(shelf_t *shelf);
 
 /// @brief Duplicates a linked list with all its links and values with new pointers
 /// @param old_list list to be duplicated

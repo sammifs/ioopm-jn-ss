@@ -28,7 +28,6 @@ void merch_destroy(elem_t key, elem_t *value, void *arg) {
     free(merch->name);
     free(merch->desc);
     shelf_list_destroy(merch->locs);
-    // TODO : When shelves are fleshed out we need to destroy every individual shelf here.
     free(merch);
 }
 

@@ -30,7 +30,10 @@ void test_add_merch(void)
 
     ioopm_store_add_merch(store, strdup("Ost"), strdup("Mat"), 20);
 
+    CU_ASSERT_FALSE(ioopm_store_add_merch(store, "Ost", "Mat", 20));
+
     CU_ASSERT_TRUE(ioopm_store_has_merch(store, "Ost"));
+    
 
     ioopm_store_destroy(store);
 }
@@ -47,6 +50,11 @@ void test_has_merch(void)
     ioopm_store_destroy(store);
 }
 
+void test_list_merch() {
+    ioopm_store_t *store = ioopm_store_create();
+    ioopm_store_list_merch(store);
+    ioopm_store_destroy(store);
+}
 
 void test_delete_merch(void)
 {
@@ -126,6 +134,18 @@ void test_edit_merch_with_stock(void) {
     ioopm_store_destroy(store);
 }
 
+void test_show_stock() {
+    ioopm_store_t *store = ioopm_store_create();
+
+    ioopm_store_show_stock(store, "Ost");
+
+    ioopm_store_add_merch(store, strdup("Ost"), strdup("Mat"), 20);
+
+    ioopm_store_show_stock(store, "Ost");
+
+    ioopm_store_destroy(store);
+}
+
 void test_replenish_of_self_owned_shelf(void)
 {
     ioopm_store_t *store = ioopm_store_create();
@@ -135,10 +155,13 @@ void test_replenish_of_self_owned_shelf(void)
 
     // Create a new shelfs
     CU_ASSERT_EQUAL(0, ioopm_store_replenish_stock(store, "Ost", strdup("G17"), 100));
- 
+    CU_ASSERT_EQUAL(0, ioopm_store_replenish_stock(store, "Ost", strdup("A12"), 100));
+    CU_ASSERT_EQUAL(0, ioopm_store_replenish_stock(store, "Ost", strdup("D45"), 100));
 
-    // Replenish the first 
+    // Replenish the both shelves
     CU_ASSERT_EQUAL(1, ioopm_store_replenish_stock(store, "Ost", "G17", 50));
+    CU_ASSERT_EQUAL(1, ioopm_store_replenish_stock(store, "Ost", "A12", 100));
+    CU_ASSERT_EQUAL(1, ioopm_store_replenish_stock(store, "Ost", "D45", 10));
 
     ioopm_store_destroy(store);
     
@@ -208,6 +231,8 @@ void test_remove_cart() {
     ioopm_store_remove_cart(store, 1);
     CU_ASSERT_FALSE(ioopm_store_has_cart(store, 1));
 
+    CU_ASSERT_FALSE(ioopm_store_remove_cart(store, 1));
+
     ioopm_store_destroy(store);
 }
 
@@ -216,9 +241,12 @@ void test_add_to_cart() {
 
     ioopm_store_create_cart(store);
     ioopm_store_add_merch(store, strdup("Ost"), strdup("Mat"), 20);
+    ioopm_store_add_merch(store, strdup("Korv"), strdup("Mat"), 50);
     ioopm_store_replenish_stock(store, "Ost", strdup("A34"), 10);
+    ioopm_store_replenish_stock(store, "Korv", strdup("G84"), 40);
 
     CU_ASSERT_EQUAL(0, ioopm_store_add_to_cart(store, 1, strdup("Ost"), 5));
+    CU_ASSERT_EQUAL(0, ioopm_store_add_to_cart(store, 1, strdup("Korv"), 20));
     CU_ASSERT_EQUAL(-2, ioopm_store_add_to_cart(store, 1, "BOrd", 5));
     CU_ASSERT_EQUAL(-1, ioopm_store_add_to_cart(store, 2, "Ost", 5));
     CU_ASSERT_EQUAL(-3, ioopm_store_add_to_cart(store, 1, "Ost", 6));
@@ -233,12 +261,22 @@ void test_remove_from_cart() {
     ioopm_store_add_merch(store, strdup("Ost"), strdup("Mat"), 20);
     ioopm_store_replenish_stock(store, "Ost", strdup("A34"), 10);
 
+    ioopm_store_add_merch(store, strdup("Bord"), strdup("Möbel"), 20);
+    CU_ASSERT_EQUAL(0, ioopm_store_replenish_stock(store, "Bord", strdup("L10"), 10));
+    
+    ioopm_store_add_merch(store, strdup("Korv"), strdup("Mat"), 20);
+    ioopm_store_replenish_stock(store, "Korv", strdup("U19"), 10);
+
     CU_ASSERT_EQUAL(0, ioopm_store_add_to_cart(store, 1, strdup("Ost"), 5));
+    CU_ASSERT_EQUAL(0, ioopm_store_add_to_cart(store, 1, strdup("Bord"), 10));
+    CU_ASSERT_EQUAL(0, ioopm_store_add_to_cart(store, 1, strdup("Korv"), 10));
 
     CU_ASSERT_EQUAL(-1, ioopm_store_remove_from_cart(store, 2, "Ost", 5));
     CU_ASSERT_EQUAL(-2, ioopm_store_remove_from_cart(store, 1, "BORD", 5));
     CU_ASSERT_EQUAL(-3, ioopm_store_remove_from_cart(store, 1, "Ost", 500));
+    CU_ASSERT_EQUAL(0, ioopm_store_remove_from_cart(store, 1, "Korv", 10));
     CU_ASSERT_EQUAL(0, ioopm_store_remove_from_cart(store, 1, "Ost", 5));
+    //CU_ASSERT_EQUAL(0, ioopm_store_remove_from_cart(store, 1, "Bord", 10));
 
     ioopm_store_destroy(store);
 }
@@ -368,6 +406,7 @@ int main()
     if (
         (CU_add_test(my_test_suite, "create and destroy ioopm_store_t", test_store_create_destroy) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_add_merch", test_add_merch) == NULL) ||
+        (CU_add_test(my_test_suite, "ioopm_store_list_merch", test_list_merch) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_delete_merch", test_delete_merch) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_has_merch", test_has_merch) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_edit_merch", test_edit_merch) == NULL) ||
@@ -375,6 +414,7 @@ int main()
         (CU_add_test(my_test_suite, "ioopm_store_edit_merch for nonexisting merch", test_edit_nonexisting_merch) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_edit_merch to already existing name", test_edit_merch_to_already_existing_name) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_edit_merch on merch with stock", test_edit_merch_with_stock) == NULL) ||
+        (CU_add_test(my_test_suite, "ioopm_store_show_stock", test_show_stock) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_replenish_merch to shelf owned by right merch", test_replenish_of_self_owned_shelf) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_replenish_merch to shelf owned by other merch", test_replenish_already_owned_shelf) == NULL) ||
         (CU_add_test(my_test_suite, "ioopm_store_replenish_merch to a merch not found in the warehouse", test_replenish_not_found_item) == NULL) ||

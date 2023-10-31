@@ -33,18 +33,6 @@ shelf_t *shelf_create(char *shelf_name, int amount, shelf_t *next) {
     return result;
 }
 
-char *shelf_get_shelf_name(shelf_t *shelf) {
-  return shelf->shelf_name;
-}
-
-char *shelf_get_merch_name(shelf_t *shelf) {
-  return shelf->merch_name;
-}
-
-int shelf_get_amount(shelf_t *shelf) {
-  return shelf->amount;
-}
-
 shelf_list_t *dup_shelf_list(shelf_list_t *old_list) {
   shelf_t *shelf = old_list->first;
   shelf_list_t *new_list = shelf_list_create();

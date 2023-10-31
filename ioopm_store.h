@@ -29,7 +29,7 @@ hash_table_t *store_get_shelves(ioopm_store_t *store);
 /// @param store Where all merchandise are kept.
 /// @param name name of merch to be looked up.
 /// @return True if found, false if not.
-bool ioopm_store_has_merch(ioopm_store_t *store, char*name);
+bool ioopm_store_has_merch(ioopm_store_t *store, char *name);
 
 /// @brief Adds merch into the store->warehouse. Utilises merch_hash_table to do so. Returns false
 /// if name already in use.
@@ -68,7 +68,8 @@ int ioopm_store_edit_merch(ioopm_store_t *store, char* old_name, char *new_name,
 /// with respective amount.
 /// @param store Where all merchandise are kept.
 /// @param name The merchandise to be printed from
-void ioopm_store_show_stock(ioopm_store_t *store, char *name);
+/// @return true if merch was found, false if it wasn't.
+bool ioopm_store_show_stock(ioopm_store_t *store, char *name);
 
 /// @brief Replenishes stock of given merch at given shelf by given amount. Works with error code
 /// returns, 0 or 1 is successful operation.
@@ -76,9 +77,10 @@ void ioopm_store_show_stock(ioopm_store_t *store, char *name);
 /// @param name name of the merch to replenish
 /// @param shelf shelf name to be replenished at, can be already existing for the merch or new.
 /// @param amount amount to replenish with.
-/// @return Returns 0 if successful.  Returns 1 if successful by increasing amount on 
+/// @return Returns 0 if successful. Returns 1 if successful by increasing amount on 
 // already existing shelf. Returns -1 if merch name could not be found. 
 /// Returns -2 if shelf is occupied by another type of merch (mixing on shelves is not allowed).
+/// Returns -3 if amount is less than 1.
 int ioopm_store_replenish_stock(ioopm_store_t *store, char *name, char *shelf, int amount);
 
 /// @brief Creates a cart 
@@ -102,24 +104,26 @@ bool ioopm_store_has_cart(ioopm_store_t *store, int cart_index);
 /// @return Returns True if the cart was found and successfully removed, else False
 bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index);
 
-/// @brief Adds a merchandise with some amount to a cart
+/// @brief Adds a merchandise with some amount to a cart. Works with error code
+/// returns, 0 is successful operation, else unsuccessful.
 /// @param store Where all the carts and merchandise exists
 /// @param cart_index The index of the cart of which to put the merchandise in
 /// @param merch_name The name of the merchandise to be added to the cart
 /// @param amount A positive number of the amount of merchandise to be added to the cart
 /// @return Returns 0 if everything worked well. Returns -1 if the given cart was not found. Returns -2 
 /// if the merch was not found. Returns -3 if the given amount was bigger than the existing amount in 
-/// the warehouse.
+/// the warehouse. Returns -4 if amount is less than 1.
 int ioopm_store_add_to_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount);
 
-/// @brief Removes a number of items of merchandise from a specific cart
+/// @brief Removes a number of items of merchandise from a specific cart. Works with error code
+/// returns, 0 is successful operation, else unsuccessful.
 /// @param store Where all the carts exists
 /// @param cart_index The index of the cart where to remove the merchandise from
 /// @param merch_name The name of the merchandise to be removed 
 /// @param amount A positive number of the amount of merchandise to be reomved from the cart
 /// @return Returns 0 if the everything went successfully. Returns -1 if the cart was not found. Returns -2
 /// if the merchandise was not found in the given cart. Returns -3 if the given amount was greater than the 
-/// existing amount, couldn't remove that many.
+/// existing amount, couldn't remove that many. Returns -4 if amount is less than 1.
 int ioopm_store_remove_from_cart(ioopm_store_t *store, int cart_index, char *merch_name, int amount);
 
 /// @brief Calculates the cost of a specific cart
