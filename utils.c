@@ -164,13 +164,3 @@ char ask_question_char(char *question)
 {
  return (ask_question(question, is_char, (convert_func) str_to_char).char_value);
 }
-
-int string_length(char *inputstring) 
-{
-    int i = 0;
-    while (inputstring[i] != '\0')
-    {
-        ++i;
-    }
-    return i;
-}

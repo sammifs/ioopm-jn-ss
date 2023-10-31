@@ -292,10 +292,10 @@ void hash_table_destroy_any_entries(hash_table_t *ht, predicate_entry pred_fun, 
 
 void hash_table_change_all(hash_table_t *ht, predicate_entry pred_fun, void *old, void *new) {
   for (int i=0; i<No_Buckets; i++) {
-    entry_t *cursor = ht->buckets[i]->next;
+  entry_t *cursor = ht->buckets[i]->next;
     while (cursor != NULL) {
       if (pred_fun(cursor, old)) {
-        char *new_name = new;
+        char *new_name = strdup(new);
         cursor->value = str_elem(new_name);
       }
       cursor = cursor->next;

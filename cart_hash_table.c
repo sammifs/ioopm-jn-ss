@@ -96,7 +96,7 @@ bool cart_change_order_with_merch(cart_t *cart, char* old_name, char *new_name, 
         if (strcmp(current->merch_name, old_name) == 0) {
             if (strcmp(old_name, new_name) != 0) {
                 free(current->merch_name);
-                current->merch_name = new_name;
+                current->merch_name = strdup(new_name);
             }
             current->price = price;
             return true;
@@ -253,7 +253,7 @@ void carts_hash_table_change_orders(cart_hash_table_t *ht, char *old_name, char 
     while (iterator_has_next(iter)) {
         cart_t *cart = iterator_next(iter).ptr_value;
 
-        cart_change_order_with_merch(cart, old_name, strdup(new_name), price);
+        cart_change_order_with_merch(cart, old_name, new_name, price);
     }
     iterator_destroy(iter);
     linked_list_destroy(ls);

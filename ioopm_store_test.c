@@ -363,6 +363,24 @@ void test_delete_merch_with_order_in_cart() {
     ioopm_store_destroy(store);   
 }
 
+void test_replenish_with_order_in_cart() {
+    ioopm_store_t *store = ioopm_store_create();
+
+    ioopm_store_create_cart(store);
+    ioopm_store_add_merch(store, strdup("Ost"), strdup("Mat"), 20);
+    ioopm_store_replenish_stock(store, "Ost", strdup("A34"), 10);
+
+    ioopm_store_add_merch(store, strdup("Bord"), strdup("Möbel"), 15);
+    ioopm_store_replenish_stock(store, "Bord", strdup("L10"), 10);
+
+    CU_ASSERT_EQUAL(0, ioopm_store_add_to_cart(store, 1, strdup("Ost"), 10));
+    CU_ASSERT_EQUAL(0, ioopm_store_add_to_cart(store, 1, strdup("Bord"), 10));
+
+    ioopm_store_replenish_stock(store, "Ost", strdup("A34"), 10);
+
+    ioopm_store_destroy(store); 
+}
+
 void test_edit_merch_with_order_in_cart() {
     ioopm_store_t *store = ioopm_store_create();
 
