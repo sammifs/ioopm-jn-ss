@@ -20,18 +20,19 @@ Required files:
 * datastructures/linked_list.h
 * datastructures/common.h
 * datastructures/iterator.h
-* cart_hash_table.h
-* ioopm_store.h
-* merch_hash_table.h
-* shelf_list.h
-* utils.h
+* business_logic/cart_hash_table.h
+* business_logic/ioopm_store.h
+* business_logic/merch_hash_table.h
+* business_logic/shelf_list.h
+* utils/utils.h
 
 # Code profile
 This code coverage has been gathered with help of gcov:
-ioopm_store.c: 95.29%
-merch_hash_table.c: 98.73%
-cart_hash_table.c: 97.50%
-shelf_list.c: 96.51%
-utils.c: 21.13%
+ioopm_store.c: 100%
+merch_hash_table.c: 100%
+cart_hash_table.c: 100%
+shelf_list.c: 98.84%
+utils.c: 23.94%
 
-
+shelf_list.c has one return statement that cannot be reached due to the overarching structure but still needs to be included because the compiler will complain otherwise.
+That which has not been covered in utils.c are functions that read from stdin.

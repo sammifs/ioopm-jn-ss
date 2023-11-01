@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "utils.h"
-#include "ioopm_store.h"
+#include "utils/utils.h"
+#include "business_logic/ioopm_store.h"
 
 
 void print_menu() {
@@ -42,7 +42,29 @@ int main() {
             }
         }
         else if (choice == 'L') {
-            ioopm_store_list_merch(store);
+            bool keep_going = true;
+            int result;
+            int count = 0;
+            while(keep_going) {
+                result = ioopm_store_list_merch(store, count);
+                if (result == 0) {
+                    char print_yes_or_no = toupper(ask_question_char("Do you want to keep on printing?: Y[yes]"));
+                    if (print_yes_or_no == 'Y') {
+                        count++;
+                    } else {
+                        keep_going = false;
+                    }
+                } else if (result == 1) {
+                    printf("All items has been listed\n");
+                    keep_going = false;
+                } else if (result == -1) {
+                    printf("page out of bounds\n");
+                    keep_going = false;
+                } else {
+                    printf("Can't print negative pages\n");
+                    keep_going = false;
+                }
+            }
         }
         else if (choice == 'D') {
             char *name = ask_question_string("What merch do you want to delete?:  ");
