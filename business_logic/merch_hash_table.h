@@ -30,7 +30,7 @@ int merch_get_price(merch_t *merch);
 
 /// @brief Changes the description of a merch
 /// @param merch The merch to operate upon
-/// @param desc The new description
+/// @param desc The new description, must be heap allocated char *.
 void merch_change_desc(merch_t *merch, char *desc);
 
 /// @brief Changes the price of a merch
@@ -64,8 +64,8 @@ bool merch_hash_table_has_key(merch_hash_table_t *ht, char *name);
 
 /// @brief adds a new merch to the hash table
 /// @param ht hash table operated upon
-/// @param name key to insert
-/// @param desc description to insert into the merch
+/// @param name key to insert, must be heap allocated char *.
+/// @param desc description to insert into the merch, must be heap allocated char *.
 /// @param price price to insert into the merch
 /// @return Returns True if the insertions went successfully, False if the name already exists
 /// in the hash table

@@ -39,7 +39,7 @@ bool cart_hash_table_remove(cart_hash_table_t *ht, int cart_index);
 /// @brief Appends a new order of a merchandise with an amount in a specific cart given
 /// @param ht hash table operated upon
 /// @param cart_index the cart to insert the order in
-/// @param merch_name the merchandise to be added
+/// @param merch_name the merchandise to be added, must be heap allocated char *
 /// @param amount the amount of the merchandise
 /// @param price the price of the merchandise
 /// @return True if it went successfully, else False
@@ -54,19 +54,19 @@ int cart_hash_table_calculate_cost(cart_hash_table_t *ht, int cart_index, bool *
 
 /// @brief Gets the total amount of a merchandise that is reserved in all carts
 /// @param ht hash table operated upon
-/// @param merch_name merch sought in the carts
+/// @param merch_name merch sought in the carts, must be heap allocated char *
 /// @return the total amount of the merchandise that is reserved in carts
 int cart_hash_table_order_amount_for_merch(cart_hash_table_t *ht, char *merch_name);
 
 /// @brief Gets the total amount of a merchandise that is reserved in a single cart
 /// @param cart cart operated upon
-/// @param merch_name merch sought in the cart
+/// @param merch_name merch sought in the cart, must be heap allocated char *
 /// @return the amount of the merchandise that is reserved in the cart
 int single_cart_order_amount_of_merch(cart_t *cart, char *merch_name);
 
 /// @brief decreases the number of items of a merchandise in a cart
 /// @param cart cart operated upon
-/// @param merch_name merchandise to decrease
+/// @param merch_name merchandise to decrease, must be heap allocated char *
 /// @param amount amount to decrease with
 void remove_amount_of_items(cart_t *cart, char *merch_name, int amount);
 
@@ -78,7 +78,7 @@ void carts_hash_table_remove_orders(cart_hash_table_t *ht, char *name);
 /// @brief changes a specific merchandise in all carts that it exists in
 /// @param ht hash table operated upon
 /// @param old_name merch to be changed
-/// @param new_name new name of the merch
+/// @param new_name new name of the merch, must be heap allocated char *.
 /// @param price new price of the merch
 void carts_hash_table_change_orders(cart_hash_table_t *ht, char *old_name, char *new_name, int price);
 

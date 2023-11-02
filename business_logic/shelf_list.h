@@ -8,12 +8,11 @@ typedef struct shelf_list shelf_list_t;
 
 typedef struct shelf shelf_t;
 
-
-/// @brief Duplicates a linked list with all its links and values with new pointers
-/// @param old_list list to be duplicated
-/// @return the duplicated list
-shelf_list_t *dup_shelf_list(shelf_list_t *old_list);
-
+/// @brief Duplicates a shelf list and inserts shelf name pointing to merch name in the shelves hash table.
+/// @param ht hash table operated upon
+/// @param old_list the old location list of shelves
+/// @param new_name the new name of the merchandise, must be heap allocated char *.
+/// @return Duplicated shelf list from old shelf list.
 shelf_list_t *dup_shelf_list_insert_shelf_ht(hash_table_t *ht, shelf_list_t *old_list, char *new_name);
 
 /// @brief Increases the amount on a shelf
@@ -37,7 +36,7 @@ shelf_list_t *shelf_list_create();
 bool shelf_list_is_empty(shelf_list_t *list);
 
 /// @brief Insert at the end of a linked list in O(1) time
-/// @param shelf_name the name of the shelf to be appended
+/// @param shelf_name the name of the shelf to be appended, must be heap allocated char *
 /// @param amount the amount for the shelf
 void shelf_list_append(shelf_list_t *list, char *shelf_name, int amount);
 

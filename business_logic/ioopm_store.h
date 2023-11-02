@@ -3,6 +3,7 @@
 #include "merch_hash_table.h"
 #include "cart_hash_table.h"
 
+/// @brief Overall structure for the program, contains hash tables.
 typedef struct store ioopm_store_t;
 
 /// @brief Creates an ioopm_store_t on the heap
@@ -34,7 +35,7 @@ bool ioopm_store_has_merch(ioopm_store_t *store, char *name);
 /// @brief Adds merch into the store->warehouse. Utilises merch_hash_table to do so. Returns false
 /// if name already in use.
 /// @param store Where all merchandise are kept.
-/// @param name name of the merch to be created.
+/// @param name name of the merch to be created, must be heap allocated char *.
 /// @param desc description of the merch to be created.
 /// @param price price of the merch to be created.
 /// @return  True if merch could be added, false means name is already occupied.
@@ -60,7 +61,7 @@ bool ioopm_store_delete_merch(ioopm_store_t *store, char *name);
 /// @brief Edits the name, description and price of a given merch.
 /// @param store Where all merchandise are kept.
 /// @param old_name The name of the merchandise to be changed.
-/// @param new_name The new name of the merchandise.
+/// @param new_name The new name of the merchandise, must be heap allocated char *.
 /// @param desc The new description for the merchandise
 /// @param price The new price for the merchandise 
 /// @return Return 1 if we only changed description and/or price. Return 0 if we successfully changed
@@ -79,10 +80,10 @@ bool ioopm_store_show_stock(ioopm_store_t *store, char *name);
 /// returns, 0 or 1 is successful operation.
 /// @param store ioopm_store_t to be operated on.
 /// @param name name of the merch to replenish
-/// @param shelf shelf name to be replenished at, can be already existing for the merch or new.
+/// @param shelf shelf name to be replenished at, can be already existing for the merch or new, must be heap allocated char *.
 /// @param amount amount to replenish with.
 /// @return Returns 0 if successful. Returns 1 if successful by increasing amount on 
-// already existing shelf. Returns -1 if merch name could not be found. 
+/// already existing shelf. Returns -1 if merch name could not be found. 
 /// Returns -2 if shelf is occupied by another type of merch (mixing on shelves is not allowed).
 /// Returns -3 if amount is less than 1.
 int ioopm_store_replenish_stock(ioopm_store_t *store, char *name, char *shelf, int amount);
@@ -112,7 +113,7 @@ bool ioopm_store_remove_cart(ioopm_store_t *store, int cart_index);
 /// returns, 0 is successful operation, else unsuccessful.
 /// @param store Where all the carts and merchandise exists
 /// @param cart_index The index of the cart of which to put the merchandise in
-/// @param merch_name The name of the merchandise to be added to the cart
+/// @param merch_name The name of the merchandise to be added to the cart, must be heap allocated char *
 /// @param amount A positive number of the amount of merchandise to be added to the cart
 /// @return Returns 0 if everything worked well. Returns -1 if the given cart was not found. Returns -2 
 /// if the merch was not found. Returns -3 if the given amount was bigger than the existing amount in 
