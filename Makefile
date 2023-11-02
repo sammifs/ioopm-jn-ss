@@ -27,10 +27,6 @@ gcov_test: $(INLUPP2_C)
 	gcov shelf_list.c
 	gcov utils.c
 
-print: $(INLUPP2_C)
-	$(info $?)
-	touch print
-
 clean:
 	rm -f *.gcov
 	rm -f *.gcda
